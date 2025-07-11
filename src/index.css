@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* ✅ Custom theme define */
+@plugin "daisyui/theme" {
+  name: "studysphere";     /* তোমার থিমের নাম */
+  default: true;           /* এটা default হিসেবে অ্যাপ্লাই হবে */
+
+  --color-primary: #1A73E8;        /* Primary - blue from logo */
+  --color-secondary: #E91E63;      /* Secondary - pinkish red */
+  --color-accent: #FFD54F;         /* Accent - yellowish highlight */
+  --color-neutral: #2A2E37;        /* Dark neutral text */
+  --color-base-100: #ffffff;       /* Base background */
+  --color-info: #3ABFF8;
+  --color-success: #36D399;
+  --color-warning: #FBBD23;
+  --color-error: #F87272;
+}
