@@ -1,9 +1,15 @@
 import React from 'react';
 import { FaBars } from 'react-icons/fa';
 import { Link, NavLink, Outlet } from 'react-router';
+import useUserRole from '../hooks/useUserRole';
 
 
 const DashboardLayout = () => {
+
+    const { role, roleLoading } = useUserRole();
+    console.log(role);
+
+
     return (
         <div className="drawer lg:drawer-open bg-base-100 text-neutral min-h-screen">
             {/* ✅ Mobile Navbar with drawer toggle */}
@@ -37,19 +43,55 @@ const DashboardLayout = () => {
                     <ul className="menu text-base-content space-y-1">
                         {/* 👉 Sidebar links will be added later like below */}
 
-                        <li>
-                            <NavLink to="/dashboard/createStudySession" className="...">Create study session
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/dashboard/viewAllStudy" className="...">View all study</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/dashboard/viewAllStudy" className="...">View all study</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/dashboard/viewAllStudy" className="...">View all study</NavLink>
-                        </li>
+                        {/* Tutor Define router */}
+
+                        {
+                            !roleLoading && role === 'tutor' && <>
+                                <li>
+                                    <NavLink to="/dashboard/createStudySession" className="...">Create study session
+                                    </NavLink>
+                                </li>
+                                {/* admin & tutor define */}
+                                <li>
+                                    <NavLink to="/dashboard/viewAllStudy" className="...">View all study</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink to="/dashboard/uploadMaterials" className="...">Upload Materials</NavLink>
+                                </li>
+
+                                {/* all user are defined like tutor, student, admin */}
+                                <li>
+                                    <NavLink to="/dashboard/viewAllMaterials" className="...">View All Materials</NavLink>
+                                </li>
+                            </>
+                        }
+
+
+                        {/* student Define Router */}
+
+                        {!roleLoading && role === "student" && <>
+                            <li>
+                                <NavLink to="/dashboard/viewBookedSession" className="...">View Booked Session</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/dashboard/createNote" className="...">Create Note</NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/dashboard/managePersonalNotes" className="...">Manage Personal Notes</NavLink>
+                            </li>
+                        </>
+                        }
+
+
+                        {/* Admin define Router */}
+
+                        {
+                            !roleLoading && role === 'admin' && <>
+                                <li>
+                                    <NavLink to="/dashboard/viewAllUsers" className="...">View All Users</NavLink>
+                                </li>
+                            </>
+                        }
 
                     </ul>
                 </aside>
@@ -62,7 +104,7 @@ export default DashboardLayout;
 
 
 
-// Create study session
-// View all study sessions created by a tutor
-// Upload materials
-// View all materials
+// View booked session
+// Create note
+// Manage personal notes
+
