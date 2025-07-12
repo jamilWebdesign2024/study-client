@@ -1,22 +1,24 @@
 import React from 'react';
 import useUserRole from '../../../hooks/useUserRole';
-import Loading from '../../../components/Loading';
-import UserDashboard from './UserDashboard';
-import RiderDashboard from './RiderDashboard';
+import StudentDashboard from './StudentDashboard';
+import TutorDashboard from './TutorDashboard';
 import AdminDashboard from './AdminDashboard';
-import Forbidden from '../../Fobidden/Forbidden';
+import Forbidden from '../Forbidden/Forbidden';
+
 
 const DashboardHome = () => {
 
     const { role, roleLoading } = useUserRole()
     if (roleLoading) {
-        return <Loading></Loading>
+        return <div>
+            <p>Loading..</p>
+        </div>
     }
 
-    if (role === 'user') {
-        return <UserDashboard></UserDashboard>
-    } else if (role === 'rider') {
-        return <RiderDashboard></RiderDashboard>
+    if (role === 'student') {
+        return <StudentDashboard></StudentDashboard>
+    } else if (role === 'tutor') {
+        return <TutorDashboard></TutorDashboard>
     } else if (role === 'admin') {
         return <AdminDashboard></AdminDashboard>
     }

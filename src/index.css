@@ -1,10 +1,13 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui"{
+  themes: light --default, dark --prefersdark;
+  themes: light --default;
+ }
 
 /* ✅ Custom theme define */
 @plugin "daisyui/theme" {
-  name: "studysphere";     /* তোমার থিমের নাম */
-  default: true;           /* এটা default হিসেবে অ্যাপ্লাই হবে */
+  name: "studysphere";    
+  default: true;           
 
   --color-primary: #1A73E8;        /* Primary - blue from logo */
   --color-secondary: #E91E63;      /* Secondary - pinkish red */

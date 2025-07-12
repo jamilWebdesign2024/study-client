@@ -13,8 +13,10 @@ import ViewAllUsers from "../Pages/Dashboard/Admin/ViewAllUsers/ViewAllUsers";
 import AuthLayout from "../Layouts/AuthLayout";
 import Login from "../Pages/Authentication/Login";
 import SignUp from "../Pages/Authentication/SignUp";
-// // import PrivateRoutes from "../routes/Privateroutes";
-// import DashboardLayout from "../Layouts/DashboardLayout";
+import PrivateRoutes from "../routes/Privateroutes";
+import DashboardHome from "../Pages/Dashboard/DashBoardHome/DashboardHome";
+import Forbidden from "../Pages/Dashboard/Forbidden/Forbidden";
+
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +26,10 @@ export const router = createBrowserRouter([
         {
             index: true,
             Component: Home
+        },
+        {
+            path: 'forbidden',
+            Component: Forbidden
         }
     ]
   },
@@ -46,10 +52,15 @@ export const router = createBrowserRouter([
 
   {
       path: '/dashboard',
-      element: <DashboardLayout></DashboardLayout>,
+      element: <PrivateRoutes><DashboardLayout></DashboardLayout></PrivateRoutes>,
       children: [
           // tutor routes
-        {
+            {
+                index: true,
+                Component: DashboardHome
+            },
+        
+          {
               path: 'createStudySession',
               Component: CreateStudySession
           },
