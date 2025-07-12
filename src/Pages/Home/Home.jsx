@@ -1,9 +1,10 @@
 import React from 'react';
+import AvailableStudySessions from '../AvailableStudySessions/AvailableStudySessions';
 
 const Home = () => {
     return (
         <div>
-            this is home
+            <AvailableStudySessions></AvailableStudySessions>
         </div>
     );
 };

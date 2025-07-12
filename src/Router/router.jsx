@@ -16,6 +16,9 @@ import SignUp from "../Pages/Authentication/SignUp";
 import PrivateRoutes from "../routes/Privateroutes";
 import DashboardHome from "../Pages/Dashboard/DashBoardHome/DashboardHome";
 import Forbidden from "../Pages/Dashboard/Forbidden/Forbidden";
+import AdminRoutes from "../routes/AdminRoutes";
+import ViewAllStudyAdmin from "../Pages/Dashboard/Admin/ViewAllStudyAdmin/ViewAllStudyAdmin";
+import ViewDetails from "../Pages/ViewDetails/ViewDetails";
 
 
 export const router = createBrowserRouter([
@@ -26,6 +29,10 @@ export const router = createBrowserRouter([
         {
             index: true,
             Component: Home
+        },
+        {
+            path: 'viewDetails',
+            Component: ViewDetails
         },
         {
             path: 'forbidden',
@@ -91,10 +98,17 @@ export const router = createBrowserRouter([
               path: 'managePersonalNotes',
               Component: ManagePersonalNotes
           },
+
+
+          //Admin only Routes
           {
               path: 'viewAllUsers',
-              Component: ViewAllUsers
-          }
+              element: <AdminRoutes><ViewAllUsers></ViewAllUsers></AdminRoutes>
+          },
+          {
+              path: 'viewAllStudyAdmin',
+              element: <AdminRoutes><ViewAllStudyAdmin></ViewAllStudyAdmin></AdminRoutes>
+          },
 
       ]
           

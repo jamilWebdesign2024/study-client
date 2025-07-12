@@ -90,6 +90,10 @@ const DashboardLayout = () => {
                                 <li>
                                     <NavLink to="/dashboard/viewAllUsers" className="...">View All Users</NavLink>
                                 </li>
+
+                                <li>
+                                    <NavLink to="/dashboard/viewAllStudyAdmin" className="...">View all study</NavLink>
+                                </li>
                             </>
                         }
 
