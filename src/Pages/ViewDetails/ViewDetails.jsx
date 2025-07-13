@@ -1,31 +1,35 @@
 import { useQuery } from '@tanstack/react-query';
 import { FaStar, FaCalendarAlt, FaUserGraduate, FaClock, FaMoneyBillWave } from 'react-icons/fa';
+import { IoMdTime } from 'react-icons/io';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import useAuth from '../../hooks/useAuth';
+import useUserRole from '../../hooks/useUserRole';
+import { CgLaptop } from 'react-icons/cg';
 
 const ViewDetails = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
-  const { user, role } = useAuth();
-
+  const { user } = useAuth();
+  const { role, roleLoading } = useUserRole();
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
+  const navigate = useNavigate()
 
   // Get study session details
   const { data: session, isLoading } = useQuery({
     queryKey: ['study-session', id],
     queryFn: async () => {
       const res = await axiosSecure.get(`/sessions/${id}`);
-      console.log("Session ID:", id);
-
       return res.data;
     },
     enabled: !!id,
   });
+
+  console.log(session)
 
   // Get reviews for this session
   const { data: reviews = [], refetch } = useQuery({
@@ -43,6 +47,51 @@ const ViewDetails = () => {
     dayjs().isBefore(dayjs(session.registrationEndDate));
 
   const disableBooking = !user || role === 'admin' || role === 'tutor' || !isRegistrationOpen;
+
+ const handleEnroll = async () => {
+  if (!user) {
+    toast.error('Please login to enroll');
+    return;
+  }
+
+  const bookedSessionData = {
+    sessionId: session._id,
+    studentEmail: user.email,
+    tutorEmail: session.tutorEmail,
+    sessionTitle: session.sessionTitle,
+    tutorName: session.tutorName,
+    registrationFee: session.registrationFee,
+    classStartDate: session.classStartDate,
+    classEndDate: session.classEndDate,
+    status: 'booked'
+  };
+
+  if (session.registrationFee === 0) {
+    // Free session - book directly via backend
+    try {
+      const res = await axiosSecure.post('/bookedSessions', bookedSessionData);
+
+      if (res.status === 201) {
+        toast.success('Successfully enrolled in the session!');
+      }
+    } catch (err) {
+      if (err.response?.status === 409) {
+        toast.error('You have already booked this session!');
+      } else {
+        console.error(err);
+        toast.error('Failed to enroll in the session');
+      }
+    }
+  } else {
+    // Paid session - redirect to payment with session data
+    navigate('/payment', {
+      state: bookedSessionData,
+    });
+  }
+};
+
+
+
 
   // Calculate average rating as number or null if no reviews
   const averageRating =
@@ -70,112 +119,208 @@ const ViewDetails = () => {
     }
   };
 
-  if (isLoading || !session) return <div className="text-center py-20">Loading...</div>;
+  if (isLoading || !session) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h2 className="text-4xl font-bold text-indigo-600">{session.sessionTitle}</h2>
-        <p className="text-gray-500 text-lg mt-2">by {session.tutorName}</p>
-        <div className="flex justify-center items-center gap-2 text-yellow-500 mt-2">
-          {averageRating !== null &&
-            [...Array(Math.floor(averageRating))].map((_, i) => (
-              <FaStar key={i} />
-            ))}
-          <span className="text-gray-600 text-sm">
-            ({averageRating !== null ? averageRating.toFixed(1) : 'No ratings yet'})
-          </span>
-        </div>
-      </div>
-
-      {/* Info Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-700 dark:text-gray-300 text-sm mb-10">
-        <div className="space-y-3">
-          <p><FaUserGraduate className="inline mr-2 text-indigo-500" /> Tutor Email: {session.tutorEmail}</p>
-          <p><FaCalendarAlt className="inline mr-2 text-indigo-500" /> Registration: {session.registrationStartDate} to {session.registrationEndDate}</p>
-          <p><FaCalendarAlt className="inline mr-2 text-indigo-500" /> Classes: {session.classStartDate} to {session.classEndDate}</p>
-        </div>
-        <div className="space-y-3">
-          <p><FaClock className="inline mr-2 text-indigo-500" /> Duration: {session.sessionDuration} weeks</p>
-          <p><FaMoneyBillWave className="inline mr-2 text-indigo-500" /> Fee: {session.registrationFee === 0 ? 'Free' : `${session.registrationFee}৳`}</p>
-          <p className="text-justify text-base text-gray-600 dark:text-gray-300 mt-4">{session.description}</p>
-        </div>
-      </div>
-
-      {/* Book Button */}
-      <div className="mb-10">
-        <button
-          disabled={disableBooking}
-          className={`btn w-full ${disableBooking ? 'btn-disabled bg-gray-300' : 'btn-primary'}`}
-        >
-          {isRegistrationOpen ? 'Book Now' : 'Registration Closed'}
-        </button>
-      </div>
-
-      {/* Reviews Section */}
-      <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-xl shadow-md">
-        <h3 className="text-xl font-semibold mb-4 text-indigo-600">Student Reviews</h3>
-
-        {/* Review form */}
-        {user && role === 'student' && (
-          <div className="mb-6">
-            <label className="block mb-2 font-semibold text-sm">Your Rating:</label>
-            <div className="flex gap-2 mb-4">
-              {[1, 2, 3, 4, 5].map((val) => (
-                <button
-                  key={val}
-                  onClick={() => setRating(val)}
-                  className={`text-xl ${val <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                >
-                  <FaStar />
-                </button>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        {/* Session Card */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+          {/* Header with image placeholder */}
+          <div className="bg-indigo-600 h-48 flex items-center justify-center">
+            <h1 className="text-4xl font-bold text-white text-center px-4">{session.sessionTitle}</h1>
+          </div>
+          
+          <div className="p-8">
+            {/* Tutor and rating info */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+              <div className="flex items-center mb-4 sm:mb-0">
+                <div className="bg-indigo-100 p-3 rounded-full mr-4">
+                  <FaUserGraduate className="text-indigo-600 text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800"> {session.tutorName}</h3>
+                  <p className="text-gray-500 text-sm">{session.tutorEmail}</p>
+                </div>
+              </div>
+              
+              {averageRating !== null && (
+                <div className="flex items-center bg-yellow-50 px-4 py-2 rounded-full">
+                  <div className="flex mr-2">
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar 
+                        key={i} 
+                        className={`text-lg ${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`} 
+                      />
+                    ))}
+                  </div>
+                  <span className="font-medium text-gray-700">
+                    {averageRating.toFixed(1)} ({reviews.length} reviews)
+                  </span>
+                </div>
+              )}
             </div>
-            <textarea
-              rows={3}
-              className="textarea textarea-bordered w-full mb-3"
-              placeholder="Write your review..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            ></textarea>
+
+            {/* Description */}
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">About This Session</h3>
+              <p className="text-gray-600 leading-relaxed">{session.description}</p>
+            </div>
+
+            {/* Details grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
+                    <FaCalendarAlt className="text-indigo-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-700">Registration Period</h4>
+                    <p className="text-gray-500 text-sm">
+                      {dayjs(session.registrationStartDate).format('MMM D, YYYY')} - {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
+                    </p>
+                    <span className={`text-xs px-2 py-1 rounded-full ${isRegistrationOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {isRegistrationOpen ? 'Open for registration' : 'Registration closed'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
+                    <IoMdTime className="text-indigo-600 text-lg" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-700">Class Schedule</h4>
+                    <p className="text-gray-500 text-sm">
+                      {dayjs(session.classStartDate).format('MMM D, YYYY')} - {dayjs(session.classEndDate).format('MMM D, YYYY')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
+                    <FaClock className="text-indigo-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-700">Duration</h4>
+                    <p className="text-gray-500 text-sm">{session.sessionDuration} weeks</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
+                    <FaMoneyBillWave className="text-indigo-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-700">Fee</h4>
+                    <p className="text-gray-500 text-sm">
+                      {session.registrationFee === 0 ? 'Free' : `${session.registrationFee}৳`}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Book Button */}
             <button
-              onClick={handlePostReview}
-              className="btn btn-outline btn-primary"
-              disabled={!comment || !rating}
+              disabled={disableBooking}
+              onClick={()=>handleEnroll(session._id)}
+              className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
+                disableBooking 
+                  ? 'bg-gray-300 cursor-not-allowed' 
+                  : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
+              }`}
             >
-              Submit Review
+              {isRegistrationOpen ? 'Enroll Now' : 'Registration Closed'}
             </button>
           </div>
-        )}
+        </div>
 
-        {/* Display reviews */}
-        {reviews.length === 0 ? (
-          <p className="text-gray-400">No reviews yet for this session.</p>
-        ) : (
-          <div className="space-y-4">
-            {reviews.map((r, i) => (
-              <div key={i} className="bg-white dark:bg-slate-700 border p-4 rounded-lg shadow-md">
-                <div className="flex justify-between items-center mb-2">
-                  <div>
-                    <p className="font-semibold text-indigo-600">{r.studentName}</p>
-                    <p className="text-xs text-gray-400">{r.studentEmail}</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-yellow-400 text-sm">
-                    {[...Array(r.rating)].map((_, i) => (
-                      <FaStar key={i} />
+        {/* Reviews Section */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Reviews</h2>
+
+            {/* Review form */}
+            {user && role === 'student' && (
+              <div className="bg-indigo-50 p-6 rounded-lg mb-8">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Share Your Experience</h3>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
+                  <div className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((val) => (
+                      <button
+                        key={val}
+                        onClick={() => setRating(val)}
+                        className={`text-2xl transition-colors ${
+                          val <= rating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-400'
+                        }`}
+                      >
+                        <FaStar />
+                      </button>
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 italic">“{r.comment}”</p>
+                <div className="mb-4">
+                  <textarea
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Write your review here..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  />
+                </div>
+                <button
+                  onClick={handlePostReview}
+                  disabled={!comment || !rating}
+                  className={`px-6 py-2 rounded-lg font-medium ${
+                    !comment || !rating
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                >
+                  Submit Review
+                </button>
               </div>
-            ))}
+            )}
+
+            {/* Reviews list */}
+            {reviews.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No reviews yet for this session.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {reviews.map((r, i) => (
+                  <div key={i} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-semibold text-gray-800">{r.studentName}</h4>
+                        <p className="text-sm text-gray-500">{r.studentEmail}</p>
+                      </div>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar
+                            key={i}
+                            className={`text-sm ${
+                              i < r.rating ? 'text-yellow-400' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mt-2">"{r.comment}"</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default ViewDetails;
-

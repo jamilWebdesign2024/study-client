@@ -19,6 +19,7 @@ import Forbidden from "../Pages/Dashboard/Forbidden/Forbidden";
 import AdminRoutes from "../routes/AdminRoutes";
 import ViewAllStudyAdmin from "../Pages/Dashboard/Admin/ViewAllStudyAdmin/ViewAllStudyAdmin";
 import ViewDetails from "../Pages/ViewDetails/ViewDetails";
+import Payment from "../Pages/Payment/Payment";
 
 
 export const router = createBrowserRouter([
@@ -37,7 +38,13 @@ export const router = createBrowserRouter([
         {
             path: 'forbidden',
             Component: Forbidden
-        }
+        },
+        
+        {
+            path: 'payment',
+            Component: Payment
+        },
+
     ]
   },
   {
