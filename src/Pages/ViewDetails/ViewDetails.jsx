@@ -1,190 +1,181 @@
-import { motion } from 'framer-motion';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import dayjs from 'dayjs';
-
-import {
-  FaStar, FaCalendarAlt, FaUserGraduate, FaChalkboardTeacher,
-  FaMoneyCheckAlt, FaClock, FaRegStar, FaStarHalfAlt
-} from 'react-icons/fa';
-import useAuth from '../../hooks/useAuth';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
+import { useQuery } from '@tanstack/react-query';
+import { FaStar, FaCalendarAlt, FaUserGraduate, FaClock, FaMoneyBillWave } from 'react-icons/fa';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useLocation } from 'react-router';
+import dayjs from 'dayjs';
+import { useParams } from 'react-router';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
+import useAuth from '../../hooks/useAuth';
 
 const ViewDetails = () => {
-  const { state } = useLocation();
-  const session = state?.session;
-  const { user, role } = useAuth();
+  const { id } = useParams();
   const axiosSecure = useAxiosSecure();
-  const queryClient = useQueryClient();
+  const { user, role } = useAuth();
 
-  const [reviewText, setReviewText] = useState('');
+  const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
 
-  if (!session) return <p className="text-center text-red-500">Session not found.</p>;
-
-  const now = dayjs();
-  const isRegistrationOpen =
-    now.isAfter(dayjs(session.registrationStartDate)) &&
-    now.isBefore(dayjs(session.registrationEndDate));
-
-  const disableBooking =
-    !user || role === 'admin' || role === 'tutor' || !isRegistrationOpen;
-
-  // Get all reviews for this session
-  const { data: reviews = [] } = useQuery({
-    queryKey: ['session-reviews', session._id],
+  // Get study session details
+  const { data: session, isLoading } = useQuery({
+    queryKey: ['study-session', id],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/reviews?sessionId=${session._id}`);
+      const res = await axiosSecure.get(`/sessions/${id}`);
+      console.log("Session ID:", id);
+
       return res.data;
     },
+    enabled: !!id,
   });
 
+  // Get reviews for this session
+  const { data: reviews = [], refetch } = useQuery({
+    queryKey: ['session-reviews', id],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/reviews?sessionId=${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+  });
+
+  const isRegistrationOpen =
+    session &&
+    dayjs().isAfter(dayjs(session.registrationStartDate)) &&
+    dayjs().isBefore(dayjs(session.registrationEndDate));
+
+  const disableBooking = !user || role === 'admin' || role === 'tutor' || !isRegistrationOpen;
+
+  // Calculate average rating as number or null if no reviews
   const averageRating =
     reviews.length > 0
-      ? (
-          reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-        ).toFixed(1)
-      : 'No ratings yet';
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : null;
 
-  // Submit Review
-  const reviewMutation = useMutation({
-    mutationFn: async () => {
-      const reviewData = {
-        sessionId: session._id,
+  const handlePostReview = async () => {
+    if (!comment || !rating) return toast.error('Please fill all fields');
+    try {
+      await axiosSecure.post('/reviews', {
+        sessionId: id,
         studentEmail: user.email,
         studentName: user.displayName,
         rating,
-        comment: reviewText,
-        createdAt: new Date(),
-      };
-      const res = await axiosSecure.post('/reviews', reviewData);
-      return res.data;
-    },
-    onSuccess: () => {
+        comment,
+      });
       toast.success('Review submitted!');
+      setComment('');
       setRating(0);
-      setReviewText('');
-      queryClient.invalidateQueries(['session-reviews', session._id]);
-    },
-    onError: () => {
+      refetch();
+    } catch (err) {
+      console.error(err);
       toast.error('Failed to submit review');
-    },
-  });
+    }
+  };
+
+  if (isLoading || !session) return <div className="text-center py-20">Loading...</div>;
 
   return (
-    <motion.div className="max-w-6xl mx-auto px-6 py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      {/* Session Info */}
-      <motion.div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg mb-12">
-        <h2 className="text-3xl font-bold text-indigo-600 mb-4 flex items-center gap-2">
-          <FaChalkboardTeacher /> {session.sessionTitle}
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">{session.description}</p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-700 dark:text-gray-300">
-          <div>
-            <p><strong>Tutor:</strong> {session.tutorName}</p>
-            <p><strong>Email:</strong> {session.tutorEmail}</p>
-            <p className="flex items-center gap-2">
-              <FaStar className="text-yellow-400" /> <strong>Avg. Rating:</strong> {averageRating}
-            </p>
-          </div>
-          <div>
-            <p className="flex items-center gap-2">
-              <FaCalendarAlt /> <strong>Registration:</strong> {session.registrationStartDate} → {session.registrationEndDate}
-            </p>
-            <p className="flex items-center gap-2">
-              <FaCalendarAlt /> <strong>Classes:</strong> {session.classStartDate} → {session.classEndDate}
-            </p>
-            <p className="flex items-center gap-2">
-              <FaClock /> <strong>Duration:</strong> {session.sessionDuration} weeks
-            </p>
-            <p className="flex items-center gap-2">
-              <FaMoneyCheckAlt /> <strong>Fee:</strong> {session.registrationFee === 0 ? 'Free' : `${session.registrationFee}৳`}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <button
-            disabled={disableBooking}
-            className={`btn btn-primary w-full font-semibold ${disableBooking && 'btn-disabled'}`}
-          >
-            {isRegistrationOpen ? 'Book Now' : 'Registration Closed'}
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Review Form */}
-      {user && role === 'student' && (
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow mb-12">
-          <h3 className="text-xl font-semibold text-indigo-600 mb-4">Leave a Review</h3>
-
-          <textarea
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
-            rows="4"
-            className="w-full p-3 border rounded-lg dark:bg-slate-700 dark:text-white mb-4"
-            placeholder="Write your review here..."
-          />
-
-          <div className="flex items-center gap-4 mb-4">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => setRating(star)}
-                className={`text-2xl ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}
-              >
-                <FaStar />
-              </button>
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h2 className="text-4xl font-bold text-indigo-600">{session.sessionTitle}</h2>
+        <p className="text-gray-500 text-lg mt-2">by {session.tutorName}</p>
+        <div className="flex justify-center items-center gap-2 text-yellow-500 mt-2">
+          {averageRating !== null &&
+            [...Array(Math.floor(averageRating))].map((_, i) => (
+              <FaStar key={i} />
             ))}
-            <span className="text-sm text-gray-500">{rating} / 5</span>
-          </div>
-
-          <button
-            onClick={() => reviewMutation.mutate()}
-            disabled={!rating || !reviewText}
-            className="btn btn-outline btn-success rounded-full"
-          >
-            Submit Review
-          </button>
+          <span className="text-gray-600 text-sm">
+            ({averageRating !== null ? averageRating.toFixed(1) : 'No ratings yet'})
+          </span>
         </div>
-      )}
+      </div>
 
-      {/* Show All Reviews */}
-      <div>
-        <h3 className="text-xl font-semibold text-indigo-600 mb-4">Student Reviews</h3>
+      {/* Info Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-700 dark:text-gray-300 text-sm mb-10">
+        <div className="space-y-3">
+          <p><FaUserGraduate className="inline mr-2 text-indigo-500" /> Tutor Email: {session.tutorEmail}</p>
+          <p><FaCalendarAlt className="inline mr-2 text-indigo-500" /> Registration: {session.registrationStartDate} to {session.registrationEndDate}</p>
+          <p><FaCalendarAlt className="inline mr-2 text-indigo-500" /> Classes: {session.classStartDate} to {session.classEndDate}</p>
+        </div>
+        <div className="space-y-3">
+          <p><FaClock className="inline mr-2 text-indigo-500" /> Duration: {session.sessionDuration} weeks</p>
+          <p><FaMoneyBillWave className="inline mr-2 text-indigo-500" /> Fee: {session.registrationFee === 0 ? 'Free' : `${session.registrationFee}৳`}</p>
+          <p className="text-justify text-base text-gray-600 dark:text-gray-300 mt-4">{session.description}</p>
+        </div>
+      </div>
+
+      {/* Book Button */}
+      <div className="mb-10">
+        <button
+          disabled={disableBooking}
+          className={`btn w-full ${disableBooking ? 'btn-disabled bg-gray-300' : 'btn-primary'}`}
+        >
+          {isRegistrationOpen ? 'Book Now' : 'Registration Closed'}
+        </button>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold mb-4 text-indigo-600">Student Reviews</h3>
+
+        {/* Review form */}
+        {user && role === 'student' && (
+          <div className="mb-6">
+            <label className="block mb-2 font-semibold text-sm">Your Rating:</label>
+            <div className="flex gap-2 mb-4">
+              {[1, 2, 3, 4, 5].map((val) => (
+                <button
+                  key={val}
+                  onClick={() => setRating(val)}
+                  className={`text-xl ${val <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                >
+                  <FaStar />
+                </button>
+              ))}
+            </div>
+            <textarea
+              rows={3}
+              className="textarea textarea-bordered w-full mb-3"
+              placeholder="Write your review..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+            <button
+              onClick={handlePostReview}
+              className="btn btn-outline btn-primary"
+              disabled={!comment || !rating}
+            >
+              Submit Review
+            </button>
+          </div>
+        )}
+
+        {/* Display reviews */}
         {reviews.length === 0 ? (
-          <p className="text-gray-500">No reviews yet.</p>
+          <p className="text-gray-400">No reviews yet for this session.</p>
         ) : (
           <div className="space-y-4">
-            {reviews.map((review, i) => (
-              <motion.div
-                key={i}
-                className="p-4 border rounded-lg shadow-sm bg-gray-50 dark:bg-slate-700"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-gray-800 dark:text-gray-200">
-                    {review.studentName}
-                  </h4>
-                  <span className="flex text-yellow-400 text-sm">
-                    {[...Array(review.rating)].map((_, idx) => (
-                      <FaStar key={idx} />
+            {reviews.map((r, i) => (
+              <div key={i} className="bg-white dark:bg-slate-700 border p-4 rounded-lg shadow-md">
+                <div className="flex justify-between items-center mb-2">
+                  <div>
+                    <p className="font-semibold text-indigo-600">{r.studentName}</p>
+                    <p className="text-xs text-gray-400">{r.studentEmail}</p>
+                  </div>
+                  <div className="flex items-center gap-1 text-yellow-400 text-sm">
+                    {[...Array(r.rating)].map((_, i) => (
+                      <FaStar key={i} />
                     ))}
-                  </span>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{review.comment}</p>
-              </motion.div>
+                <p className="text-gray-600 dark:text-gray-300 italic">“{r.comment}”</p>
+              </div>
             ))}
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 export default ViewDetails;
+

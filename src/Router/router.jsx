@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
             Component: Home
         },
         {
-            path: 'viewDetails',
+            path: '/viewDetails/:id',
             Component: ViewDetails
         },
         {
