@@ -9,9 +9,18 @@ import { motion } from 'framer-motion';
 const ViewAllStudyAdmin = () => {
   const axiosSecure = useAxiosSecure();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
   const [feeType, setFeeType] = useState('free');
   const [amount, setAmount] = useState(0);
+  const [updateData, setUpdateData] = useState({
+    sessionTitle: '',
+    registrationStartDate: '',
+    registrationEndDate: '',
+    classStartDate: '',
+    classEndDate: '',
+    registrationFee: 0,
+  });
 
   const { data: sessions = [], refetch } = useQuery({
     queryKey: ['all-study-sessions'],
@@ -27,6 +36,52 @@ const ViewAllStudyAdmin = () => {
     setFeeType('free');
     setAmount(0);
   };
+
+  const handleUpdateClick = (session) => {
+    setSelectedSession(session);
+    setUpdateData({
+      sessionTitle: session.sessionTitle,
+      registrationStartDate: session.registrationStartDate,
+      registrationEndDate: session.registrationEndDate,
+      classStartDate: session.classStartDate,
+      classEndDate: session.classEndDate,
+      registrationFee: session.registrationFee,
+    });
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleUpdateSubmit = async () => {
+    try {
+      const res = await axiosSecure.patch(`/update/${selectedSession._id}`, updateData);
+
+      const msg = res.data?.message;
+
+      if (msg === "Update successful") {
+        toast.success("Session updated successfully!");
+        refetch();
+        setIsUpdateModalOpen(false);
+      } else if (msg === "No changes were made") {
+        toast.info("No changes were made.");
+      } else if (msg === "Session not found") {
+        toast.error("Session not found.");
+      } else {
+        toast.error("Something went wrong.");
+      }
+    } catch (err) {
+      toast.error("Failed to update session");
+      console.error(err);
+    }
+  };
+
+
 
   const handleApproval = async () => {
     try {
@@ -66,10 +121,6 @@ const ViewAllStudyAdmin = () => {
     } catch (err) {
       toast.error('Failed to delete session');
     }
-  };
-
-  const handleUpdate = (id) => {
-    toast.info(`Open update modal or route for session ID: ${id}`);
   };
 
   return (
@@ -119,13 +170,12 @@ const ViewAllStudyAdmin = () => {
                 </td>
                 <td>
                   <span
-                    className={`px-3 py-1 rounded-full text-white text-sm ${
-                      session.status === 'pending'
+                    className={`px-3 py-1 rounded-full text-white text-sm ${session.status === 'pending'
                         ? 'bg-yellow-500'
                         : session.status === 'approved'
-                        ? 'bg-green-500'
-                        : 'bg-red-500'
-                    }`}
+                          ? 'bg-green-500'
+                          : 'bg-red-500'
+                      }`}
                   >
                     {session.status}
                   </span>
@@ -151,7 +201,7 @@ const ViewAllStudyAdmin = () => {
                   {session.status === 'approved' && (
                     <>
                       <button
-                        onClick={() => handleUpdate(session._id)}
+                        onClick={() => handleUpdateClick(session)}
                         className="btn btn-sm btn-info"
                       >
                         <FaEdit />
@@ -209,6 +259,94 @@ const ViewAllStudyAdmin = () => {
               </button>
               <button className="btn btn-success" onClick={handleApproval}>
                 Confirm
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+
+      {/* Update Modal */}
+      <Dialog open={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)} className="fixed z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center px-4">
+          <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full">
+            <Dialog.Title className="text-lg font-bold mb-4">Update Session</Dialog.Title>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-1 font-medium">Session Title</label>
+                <input
+                  type="text"
+                  name="sessionTitle"
+                  value={updateData.sessionTitle}
+                  onChange={handleUpdateChange}
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-medium">Registration Start</label>
+                  <input
+                    type="date"
+                    name="registrationStartDate"
+                    value={updateData.registrationStartDate}
+                    onChange={handleUpdateChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 font-medium">Registration End</label>
+                  <input
+                    type="date"
+                    name="registrationEndDate"
+                    value={updateData.registrationEndDate}
+                    onChange={handleUpdateChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-medium">Class Start</label>
+                  <input
+                    type="date"
+                    name="classStartDate"
+                    value={updateData.classStartDate}
+                    onChange={handleUpdateChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 font-medium">Class End</label>
+                  <input
+                    type="date"
+                    name="classEndDate"
+                    value={updateData.classEndDate}
+                    onChange={handleUpdateChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-1 font-medium">Registration Fee (৳)</label>
+                <input
+                  type="number"
+                  name="registrationFee"
+                  value={updateData.registrationFee}
+                  onChange={handleUpdateChange}
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button className="btn btn-outline" onClick={() => setIsUpdateModalOpen(false)}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={handleUpdateSubmit}>
+                Update
               </button>
             </div>
           </Dialog.Panel>
