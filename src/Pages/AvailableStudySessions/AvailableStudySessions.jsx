@@ -77,7 +77,7 @@ const AvailableStudySessions = () => {
                                 </div>
                             </div>
 
-                            <Link to={`/viewDetails/${session._id}`}>
+                            <Link to={`/view-details/${session._id}`}>
                                 <div className="border-t px-6 py-4">
                                     <button className="w-full btn btn-sm btn-primary rounded-full hover:scale-[1.02] transition-transform">
                                         Read More

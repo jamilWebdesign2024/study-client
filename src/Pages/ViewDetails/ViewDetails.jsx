@@ -8,19 +8,18 @@ import { useNavigate, useParams } from 'react-router';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import useAuth from '../../hooks/useAuth';
 import useUserRole from '../../hooks/useUserRole';
-import { CgLaptop } from 'react-icons/cg';
 
 const ViewDetails = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-  const { role, roleLoading } = useUserRole();
+  const { role } = useUserRole();
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  // Get study session details
-  const { data: session, isLoading } = useQuery({
+  // Get session details
+  const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ['study-session', id],
     queryFn: async () => {
       const res = await axiosSecure.get(`/sessions/${id}`);
@@ -29,9 +28,22 @@ const ViewDetails = () => {
     enabled: !!id,
   });
 
-  console.log(session)
+  // Check if user already booked
+  const { data: userBookings = [], isLoading: bookingLoading } = useQuery({
+    queryKey: ['user-booking-check', user?.email, id],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const res = await axiosSecure.get(
+        `/bookedSessions/check?studentEmail=${user.email}&sessionId=${id}`
+      );
+      return res.data;
+    },
+    enabled: !!user?.email && !!id,
+  });
 
-  // Get reviews for this session
+  const hasAlreadyBooked = userBookings.length > 0;
+
+  // Get reviews
   const { data: reviews = [], refetch } = useQuery({
     queryKey: ['session-reviews', id],
     queryFn: async () => {
@@ -46,54 +58,48 @@ const ViewDetails = () => {
     dayjs().isAfter(dayjs(session.registrationStartDate)) &&
     dayjs().isBefore(dayjs(session.registrationEndDate));
 
-  const disableBooking = !user || role === 'admin' || role === 'tutor' || !isRegistrationOpen;
+  const disableBooking =
+    !user || role === 'admin' || role === 'tutor' || !isRegistrationOpen || hasAlreadyBooked;
 
- const handleEnroll = async () => {
-  if (!user) {
-    toast.error('Please login to enroll');
-    return;
-  }
+  const handleEnroll = async () => {
+    if (!user) {
+      toast.error('Please login to enroll');
+      return;
+    }
 
-  const bookedSessionData = {
-    sessionId: session._id,
-    studentEmail: user.email,
-    tutorEmail: session.tutorEmail,
-    sessionTitle: session.sessionTitle,
-    tutorName: session.tutorName,
-    registrationFee: session.registrationFee,
-    classStartDate: session.classStartDate,
-    classEndDate: session.classEndDate,
-    status: 'booked'
+    if (hasAlreadyBooked) {
+      toast.error('You have already enrolled in this session!');
+      return;
+    }
+
+    const bookedSessionData = {
+      sessionId: session._id,
+      studentEmail: user.email,
+      tutorEmail: session.tutorEmail,
+      sessionTitle: session.sessionTitle,
+      tutorName: session.tutorName,
+      registrationFee: session.registrationFee,
+      classStartDate: session.classStartDate,
+      classEndDate: session.classEndDate,
+      status: 'booked',
+    };
+
+    if (session.registrationFee === 0) {
+      try {
+        const res = await axiosSecure.post('/bookedSessions', bookedSessionData);
+        if (res.status === 201) {
+          toast.success('Successfully enrolled in the session!');
+        }
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to enroll');
+      }
+    } else {
+      navigate('/payment', {
+        state: bookedSessionData,
+      });
+    }
   };
 
-  if (session.registrationFee === 0) {
-    // Free session - book directly via backend
-    try {
-      const res = await axiosSecure.post('/bookedSessions', bookedSessionData);
-
-      if (res.status === 201) {
-        toast.success('Successfully enrolled in the session!');
-      }
-    } catch (err) {
-      if (err.response?.status === 409) {
-        toast.error('You have already booked this session!');
-      } else {
-        console.error(err);
-        toast.error('Failed to enroll in the session');
-      }
-    }
-  } else {
-    // Paid session - redirect to payment with session data
-    navigate('/payment', {
-      state: bookedSessionData,
-    });
-  }
-};
-
-
-
-
-  // Calculate average rating as number or null if no reviews
   const averageRating =
     reviews.length > 0
       ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
@@ -119,38 +125,37 @@ const ViewDetails = () => {
     }
   };
 
-  if (isLoading || !session) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (sessionLoading || bookingLoading || !session)
+    return <div className="text-center py-20 text-lg font-semibold">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Session Card */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-          {/* Header with image placeholder */}
           <div className="bg-indigo-600 h-48 flex items-center justify-center">
             <h1 className="text-4xl font-bold text-white text-center px-4">{session.sessionTitle}</h1>
           </div>
-          
+
           <div className="p-8">
-            {/* Tutor and rating info */}
+            {/* Tutor Info & Rating */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
               <div className="flex items-center mb-4 sm:mb-0">
                 <div className="bg-indigo-100 p-3 rounded-full mr-4">
                   <FaUserGraduate className="text-indigo-600 text-xl" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800"> {session.tutorName}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">{session.tutorName}</h3>
                   <p className="text-gray-500 text-sm">{session.tutorEmail}</p>
                 </div>
               </div>
-              
               {averageRating !== null && (
                 <div className="flex items-center bg-yellow-50 px-4 py-2 rounded-full">
                   <div className="flex mr-2">
                     {[...Array(5)].map((_, i) => (
-                      <FaStar 
-                        key={i} 
-                        className={`text-lg ${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`} 
+                      <FaStar
+                        key={i}
+                        className={`text-lg ${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
                       />
                     ))}
                   </div>
@@ -167,7 +172,7 @@ const ViewDetails = () => {
               <p className="text-gray-600 leading-relaxed">{session.description}</p>
             </div>
 
-            {/* Details grid */}
+            {/* Session Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="space-y-4">
                 <div className="flex items-start">
@@ -177,9 +182,14 @@ const ViewDetails = () => {
                   <div>
                     <h4 className="font-medium text-gray-700">Registration Period</h4>
                     <p className="text-gray-500 text-sm">
-                      {dayjs(session.registrationStartDate).format('MMM D, YYYY')} - {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
+                      {dayjs(session.registrationStartDate).format('MMM D, YYYY')} -{' '}
+                      {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
                     </p>
-                    <span className={`text-xs px-2 py-1 rounded-full ${isRegistrationOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        isRegistrationOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}
+                    >
                       {isRegistrationOpen ? 'Open for registration' : 'Registration closed'}
                     </span>
                   </div>
@@ -192,7 +202,8 @@ const ViewDetails = () => {
                   <div>
                     <h4 className="font-medium text-gray-700">Class Schedule</h4>
                     <p className="text-gray-500 text-sm">
-                      {dayjs(session.classStartDate).format('MMM D, YYYY')} - {dayjs(session.classEndDate).format('MMM D, YYYY')}
+                      {dayjs(session.classStartDate).format('MMM D, YYYY')} -{' '}
+                      {dayjs(session.classEndDate).format('MMM D, YYYY')}
                     </p>
                   </div>
                 </div>
@@ -223,28 +234,28 @@ const ViewDetails = () => {
               </div>
             </div>
 
-            {/* Book Button */}
+            {/* Enroll Button */}
             <button
               disabled={disableBooking}
-              onClick={()=>handleEnroll(session._id)}
+              onClick={handleEnroll}
               className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
-                disableBooking 
-                  ? 'bg-gray-300 cursor-not-allowed' 
+                disableBooking
+                  ? 'bg-gray-300 cursor-not-allowed'
                   : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
               }`}
             >
-              {isRegistrationOpen ? 'Enroll Now' : 'Registration Closed'}
+              {hasAlreadyBooked ? 'Already Enrolled' : isRegistrationOpen ? 'Enroll Now' : 'Registration Closed'}
             </button>
           </div>
         </div>
 
-        {/* Reviews Section */}
+        {/* Review Section */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Reviews</h2>
 
-            {/* Review form */}
-            {user && role === 'student' && (
+            {/* Review form for enrolled student */}
+            {user && role === 'student' && hasAlreadyBooked && (
               <div className="bg-indigo-50 p-6 rounded-lg mb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Share Your Experience</h3>
                 <div className="mb-4">
@@ -286,7 +297,7 @@ const ViewDetails = () => {
               </div>
             )}
 
-            {/* Reviews list */}
+            {/* Reviews List */}
             {reviews.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-500">No reviews yet for this session.</p>
@@ -304,9 +315,7 @@ const ViewDetails = () => {
                         {[...Array(5)].map((_, i) => (
                           <FaStar
                             key={i}
-                            className={`text-sm ${
-                              i < r.rating ? 'text-yellow-400' : 'text-gray-300'
-                            }`}
+                            className={`text-sm ${i < r.rating ? 'text-yellow-400' : 'text-gray-300'}`}
                           />
                         ))}
                       </div>

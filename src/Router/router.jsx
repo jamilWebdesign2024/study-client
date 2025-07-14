@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
             Component: Home
         },
         {
-            path: '/viewDetails/:id',
+            path: '/view-details/:id',
             Component: ViewDetails
         },
         {
