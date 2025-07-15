@@ -4,7 +4,7 @@ import useUserRole from '../hooks/useUserRole';
 import Loading from '../Components/Loading';
 import { Navigate } from 'react-router';
 
-const RiderRoutes = ({ children }) => {
+const StudentRoutes = ({ children }) => {
     const { user, loading } = useAuth();
     const { role, roleLoading } = useUserRole();
 
@@ -15,11 +15,11 @@ const RiderRoutes = ({ children }) => {
         return <Loading></Loading>
     }
 
-    if (!user || role !== 'rider') {
+    if (!user || role !== 'student') {
         return <Navigate state={{ from: location.pathname }} to='/forbidden'></Navigate>
     }
 
     return children;
 };
 
-export default RiderRoutes;
+export default StudentRoutes;

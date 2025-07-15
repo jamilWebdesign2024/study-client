@@ -6,8 +6,6 @@ import CreateStudySession from "../Pages/Dashboard/CreateStudySession/CreateStud
 import ViewAllStudy from "../Pages/Dashboard/ViewAllStudy/ViewAllStudy";
 import UploadMaterials from "../Pages/Dashboard/UploadMaterials/UploadMaterials";
 import ViewAllMaterials from "../Pages/Dashboard/ViewAllMaterials/ViewAllMaterials";
-import ViewBookedSession from "../Pages/Dashboard/StudentRoute/ViewBookedSession/ViewBookedSession";
-import CreateNote from "../Pages/Dashboard/StudentRoute/CreateNote/CreateNote";
 import ManagePersonalNotes from "../Pages/Dashboard/StudentRoute/ManagePersonalNotes/ManagePersonalNotes";
 import ViewAllUsers from "../Pages/Dashboard/Admin/ViewAllUsers/ViewAllUsers";
 import AuthLayout from "../Layouts/AuthLayout";
@@ -20,6 +18,10 @@ import AdminRoutes from "../routes/AdminRoutes";
 import ViewAllStudyAdmin from "../Pages/Dashboard/Admin/ViewAllStudyAdmin/ViewAllStudyAdmin";
 import ViewDetails from "../Pages/ViewDetails/ViewDetails";
 import Payment from "../Pages/Payment/Payment";
+import StudentRoutes from "../routes/StudentRoutes";
+import CreateNote from "../Pages/Dashboard/StudentRoute/CreateNote/CreateNote";
+import ViewBookedSession from "../Pages/Dashboard/StudentRoute/ViewBookedSession/ViewBookedSession";
+import ViewAllStudyStudent from "../Pages/Dashboard/StudentRoute/ViewAllStudy/ViewAllStudyStudent";
 
 
 export const router = createBrowserRouter([
@@ -95,15 +97,20 @@ export const router = createBrowserRouter([
           // student define 
           {
               path: 'viewBookedSession',
-              Component: ViewBookedSession
+              element: <StudentRoutes><ViewBookedSession></ViewBookedSession></StudentRoutes>
           },
           {
               path: 'createNote',
-              Component: CreateNote
+              element: <StudentRoutes><CreateNote></CreateNote></StudentRoutes>
+              
           },
           {
               path: 'managePersonalNotes',
-              Component: ManagePersonalNotes
+              element: <StudentRoutes><ManagePersonalNotes></ManagePersonalNotes></StudentRoutes>
+          },
+          {
+              path: 'viewAllStudy/student',
+              element: <StudentRoutes><ViewAllStudyStudent></ViewAllStudyStudent></StudentRoutes>
           },
 
 
