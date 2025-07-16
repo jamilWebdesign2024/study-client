@@ -2,94 +2,127 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import { FaCalendarAlt, FaClock, FaBookOpen } from 'react-icons/fa';
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaBookOpen,
+  FaUserGraduate,
+  FaChalkboardTeacher,
+  FaArrowRight
+} from 'react-icons/fa';
 import { Link } from 'react-router';
 
 const AvailableStudySessions = () => {
-    const axiosSecure = useAxiosSecure();
+  const axiosSecure = useAxiosSecure();
 
-    const { data: sessions = [] } = useQuery({
-        queryKey: ['available-study-sessions'],
-        queryFn: async () => {
-            const res = await axiosSecure.get('/sessions/home');
-            return res.data;
-        }
-    });
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['available-study-sessions'],
+    queryFn: async () => {
+      const res = await axiosSecure.get('/sessions/home');
+      return res.data;
+    }
+  });
 
+  const getSessionStatus = (start, end) => {
+    const now = dayjs();
+    if (now.isBefore(dayjs(start))) return 'upcoming';
+    if (now.isAfter(dayjs(end))) return 'closed';
+    return 'ongoing';
+  };
 
-    const isOngoing = (start, end) => {
-        const now = dayjs();
-        return now.isAfter(dayjs(start)) && now.isBefore(dayjs(end));
-    };
-
-    return (
-        <motion.div
-            className="max-w-7xl mx-auto px-4 py-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+  return (
+    <motion.div
+      className="max-w-7xl mx-auto px-4 py-12"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Section Title */}
+      <div className="text-center mb-12">
+        <motion.h2
+          className="text-4xl font-bold text-[var(--color-primary)] mb-3"
+          initial={{ y: -20 }}
+          animate={{ y: 0 }}
         >
-            <h2 className="text-3xl font-bold text-center text-indigo-600 mb-2">
-                Explore Available Study Sessions
-            </h2>
-            <p className="text-center text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-                Browse the latest approved sessions. Registration might still be open, so act fast! You can view more details by clicking the "Read More" button.
-            </p>
+          Explore Study Sessions
+        </motion.h2>
+        <p className="text-lg text-[var(--color-neutral)] max-w-3xl mx-auto">
+          Join interactive learning experiences with expert tutors and peers.
+        </p>
+      </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {sessions.map((session, index) => {
-                    const ongoing = isOngoing(session.registrationStartDate, session.registrationEndDate);
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {sessions.map((session) => {
+          const status = getSessionStatus(session.registrationStartDate, session.registrationEndDate);
 
-                    return (
-                        <motion.div
-                            key={session._id}
-                            className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
-                            whileHover={{ y: -5 }}
-                        >
-                            <div className="p-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-2xl font-bold text-indigo-700 flex items-center gap-2">
-                                        <FaBookOpen className="text-indigo-500" /> {session.sessionTitle}
-                                    </h3>
+          return (
+            <motion.div
+              key={session._id}
+              className="study-card"
+              whileHover={{ y: -5 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Card Header */}
+              <div className="card-header">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-[var(--color-neutral)] flex items-center gap-2">
+                    <FaBookOpen className="session-meta-icon" />
+                    {session.sessionTitle}
+                  </h3>
+                  <span className={`session-status ${status}`}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </span>
+                </div>
+              </div>
 
-                                    <span
-                                        className={`text-xs px-3 py-1 rounded-full text-white font-semibold ${ongoing ? 'bg-green-500' : 'bg-red-500'
-                                            }`}
-                                    >
-                                        {ongoing ? 'Ongoing' : 'Closed'}
-                                    </span>
-                                </div>
+              {/* Card Body */}
+              <div className="card-body">
+                <p className="text-[var(--color-neutral)] mb-4 line-clamp-3">
+                  {session.description}
+                </p>
 
-                                <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed line-clamp-3">
-                                    {session.description}
-                                </p>
+                <div className="space-y-3 mt-4">
+                  <div className="session-meta">
+                    <FaCalendarAlt className="session-meta-icon" />
+                    <span>
+                      {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
+                      {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
+                    </span>
+                  </div>
+                  <div className="session-meta">
+                    <FaClock className="session-meta-icon" />
+                    <span>{session.sessionDuration} week program</span>
+                  </div>
+                  <div className="session-meta">
+                    <FaUserGraduate className="session-meta-icon" />
+                    <span>{session.enrolledStudents || 0} students enrolled</span>
+                  </div>
+                  {session.tutorName && (
+                    <div className="session-meta">
+                      <FaChalkboardTeacher className="session-meta-icon" />
+                      <span>Taught by {session.tutorName}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
 
-                                <div className="flex items-center justify-start gap-4 text-gray-500 text-sm mb-2">
-                                    <div className="flex items-center gap-1">
-                                        <FaCalendarAlt className="text-indigo-400" />
-                                        <span>
-                                            {session.registrationStartDate} - {session.registrationEndDate}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <FaClock className="text-indigo-400" />
-                                        <span>{session.sessionDuration} weeks</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Link to={`/view-details/${session._id}`}>
-                                <div className="border-t px-6 py-4">
-                                    <button className="w-full btn btn-sm btn-primary rounded-full hover:scale-[1.02] transition-transform">
-                                        Read More
-                                    </button>
-                                </div>
-                            </Link>
-                        </motion.div>
-                    );
-                })}
-            </div>
-        </motion.div>
-    );
+              {/* Card Footer */}
+              <div className="card-footer">
+                <Link to={`/view-details/${session._id}`}>
+                  <button className="btn-card">
+                    View Details <FaArrowRight />
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
 };
 
 export default AvailableStudySessions;

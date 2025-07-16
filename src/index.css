@@ -1,9 +1,76 @@
+/* index.css */
 @import "tailwindcss";
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
-  /* --color-primary: '#9ae600';
-  --color-secondary: teal; */
+
+  /* Vibrant Education Theme */
+  --color-primary: #0D9488;         /* Teal green (fresh, positive) */
+  --color-secondary: #3B82F6;       /* Strong blue for trust */
+  --color-accent: #F59E0B;          /* Golden amber for energy */
+  --color-neutral: #374151;         /* Dark gray for readable text */
+  --color-base-100: #F9FAFB;        /* Very light background */
+  --color-info: #0EA5E9;            /* Sky blue for info elements */
+  --color-success: #10B981;         /* Green for success/active */
+  --color-warning: #F97316;         /* Orange */
+  --color-error: #EF4444;           /* Red */
+}
+
+/* Card Styles */
+.study-card {
+  @apply bg-[var(--color-base-100)] rounded-xl shadow-md overflow-hidden;
+  @apply border border-[var(--color-neutral)]/10;
+  @apply transition-all duration-300 hover:shadow-lg;
+  @apply flex flex-col h-full;
+}
+
+.card-header {
+  @apply bg-gradient-to-r from-primary/20 to-secondary/20;
+  @apply px-6 py-4 border-b border-[var(--color-neutral)]/10;
+}
+
+.card-body {
+  @apply p-6 flex-grow;
+}
+
+.card-footer {
+  @apply px-6 py-4 bg-[var(--color-neutral)]/5;
+  @apply border-t border-[var(--color-neutral)]/10;
+}
+
+.session-status {
+  @apply text-xs font-semibold px-3 py-1 rounded-full;
+}
+
+.session-status.ongoing {
+  @apply bg-[var(--color-success)] text-white;
+}
+
+.session-status.closed {
+  @apply bg-[var(--color-error)] text-white;
+}
+
+.session-status.upcoming {
+  @apply bg-[var(--color-warning)] text-white;
+}
+
+.session-meta {
+  @apply flex items-center gap-2 text-sm text-[var(--color-neutral)];
+}
+
+.session-meta-icon {
+  @apply text-[var(--color-secondary)];
+}
+
+.btn-card {
+  @apply w-full btn btn-sm bg-[var(--color-secondary)] text-white rounded-lg;
+  @apply transition-all hover:scale-[1.02] hover:bg-[var(--color-primary)];
+  @apply flex items-center justify-center gap-2;
+}
+
+/* Text contrast adjustments */
+.text-neutral {
+  @apply text-[var(--color-neutral)];
 }

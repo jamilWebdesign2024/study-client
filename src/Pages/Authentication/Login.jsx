@@ -51,7 +51,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-base-100 flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-8">
         <h2 className="text-2xl font-bold text-center mb-6 text-primary">
           Login to <span className="text-secondary">StudySphere</span>
