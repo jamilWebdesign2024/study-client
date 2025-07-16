@@ -23,6 +23,8 @@ import CreateNote from "../Pages/Dashboard/StudentRoute/CreateNote/CreateNote";
 import ViewBookedSession from "../Pages/Dashboard/StudentRoute/ViewBookedSession/ViewBookedSession";
 import ViewAllStudyStudent from "../Pages/Dashboard/StudentRoute/ViewAllStudy/ViewAllStudyStudent";
 import ViewAllMaterialsAdmin from "../Pages/Dashboard/Admin/ViewAllMaterialsAdmin/ViewAllMaterialsAdmin";
+import Tutors from "../Pages/shared/Tutors/Tutors";
+import StudySessions from "../Pages/Home/StudySessions";
 
 
 export const router = createBrowserRouter([
@@ -32,6 +34,7 @@ export const router = createBrowserRouter([
     children:[
         {
             index: true,
+            path: "/",
             Component: Home
         },
         {
@@ -42,7 +45,14 @@ export const router = createBrowserRouter([
             path: 'forbidden',
             Component: Forbidden
         },
-        
+        {
+            path: 'tutors',
+            Component: Tutors
+        },
+        {
+            path: 'all-study-sessions',
+            Component: StudySessions
+        },
         {
             path: 'payment',
             Component: Payment
