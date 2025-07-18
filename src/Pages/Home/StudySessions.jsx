@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import {
   FaSearch,
   FaSpinner,
   FaCalendarAlt,
   FaClock,
+  FaBookOpen,
   FaUserGraduate,
-  FaChalkboardTeacher
+  FaChalkboardTeacher,
+  FaArrowRight
 } from 'react-icons/fa';
-import Loading from '../../components/Loading';
+
 import { Link } from 'react-router';
 import dayjs from 'dayjs';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
+import Loading from '../../Components/Loading';
 
 const PAGE_SIZE = 6;
 
@@ -31,19 +35,27 @@ const StudySessions = () => {
     error,
     refetch
   } = useInfiniteQuery({
-    queryKey: ['study-sessions', searchTerm, category],
+    queryKey: ['study-sessions', searchTerm, category, status],
     queryFn: async ({ pageParam = 0 }) => {
       const res = await axiosSecure.get(
-        `/sessions/all?page=${pageParam}&limit=${PAGE_SIZE}&search=${searchTerm}&category=${category}`
+        `/sessions/all?page=${pageParam}&limit=${PAGE_SIZE}&search=${searchTerm}&category=${category}&status=${status}`
       );
-      return res.data;
+      return {
+        sessions: res.data?.sessions || res.data || [],
+        page: res.data?.page || pageParam,
+        hasMore: res.data?.hasMore || false
+      };
     },
     getNextPageParam: (lastPage) => lastPage?.hasMore ? lastPage.page + 1 : undefined,
+    initialPageParam: 0,
     retry: 2,
     retryDelay: 1000
   });
 
-  const allSessions = data?.pages.flatMap(page => page?.sessions || []) || [];
+  // Filter to only show approved sessions
+  const allSessions = data?.pages.flatMap(page => 
+    (page?.sessions || []).filter(session => session.status === 'approved')
+  ) || [];
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -61,62 +73,82 @@ const StudySessions = () => {
   };
 
   return (
-    <div className='bg-base-300 min-h-screen'>
+    <div className="bg-base-300 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-primary mb-4">
-            Explore Study Sessions
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl font-bold text-primary mb-3">
+            Explore Approved Study Sessions
           </h1>
-          <p className="text-gray-600 text-lg md:text-xl">
-            Discover various study sessions, filter by category or status
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Browse through all approved study sessions and find the perfect learning opportunity
           </p>
-        </div>
+        </motion.div>
 
-        <form onSubmit={handleSearch} className="mb-6 flex flex-wrap gap-4 justify-between items-center">
-          <div className="flex items-center gap-2">
-            <FaSearch className="text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search sessions..."
-              className="input input-bordered w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <motion.form 
+          onSubmit={handleSearch} 
+          className="mb-8 bg-white p-4 rounded-lg shadow-md"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2">
+              <FaSearch className="text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search sessions..."
+                className="bg-transparent w-full focus:outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <select
+              className="select select-bordered flex-1 max-w-xs"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Science">Science</option>
+              <option value="Language">Language</option>
+              <option value="Programming">Programming</option>
+              <option value="Business">Business</option>
+            </select>
+
+            <select
+              className="select select-bordered flex-1 max-w-xs"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="closed">Closed</option>
+            </select>
+
+            <button 
+              type="submit" 
+              className="btn btn-primary flex-1 max-w-xs"
+            >
+              Apply Filters
+            </button>
           </div>
-
-          <select
-            className="select select-bordered"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="Mathematics">Mathematics</option>
-            <option value="Science">Science</option>
-            <option value="Language">Language</option>
-            <option value="Programming">Programming</option>
-            <option value="Business">Business</option>
-          </select>
-
-          <select
-            className="select select-bordered"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="closed">Closed</option>
-          </select>
-
-          <button type="submit" className="btn btn-primary">
-            Search
-          </button>
-        </form>
+        </motion.form>
 
         {isLoading && <Loading />}
 
         {isError && (
-          <div className="alert alert-error mb-6">
+          <motion.div 
+            className="alert alert-error mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
             <div>
               <span>Error loading sessions: {error.message}</span>
               <button
@@ -126,7 +158,7 @@ const StudySessions = () => {
                 Retry
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {!isLoading && !isError && (
@@ -134,91 +166,80 @@ const StudySessions = () => {
             dataLength={allSessions.length}
             next={fetchNextPage}
             hasMore={hasNextPage || false}
-            loader={
-              <div className="text-center py-4">
-                <FaSpinner className="animate-spin text-2xl mx-auto" />
-              </div>
-            }
+            loader={<div className="text-center py-8"><FaSpinner className="animate-spin text-2xl mx-auto text-primary" /></div>}
             endMessage={
-              <p className="text-center py-4 text-gray-500">
-                {allSessions.length > 0 ? "No more sessions to load" : "No sessions found"}
+              <p className="text-center py-8 text-gray-500">
+                {allSessions.length > 0 
+                  ? "You've reached the end!" 
+                  : "No approved sessions found matching your criteria"}
               </p>
             }
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-              {allSessions
-                .filter((session) => {
-                  const sessionStatus = getSessionStatus(session.registrationStartDate, session.registrationEndDate);
-                  return !status || sessionStatus === status;
-                })
-                .map((session) => {
-                  const sessionStatus = getSessionStatus(session.registrationStartDate, session.registrationEndDate);
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allSessions.map((session) => {
+                const sessionStatus = getSessionStatus(session.registrationStartDate, session.registrationEndDate);
 
-                  return (
-                    <div
-                      key={session._id}
-                      className="bg-white border border-gray-100 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-                    >
-                      <div className="relative">
-                        <img
-                          src={session.image || '/default-session.jpg'}
-                          alt={session.sessionTitle || 'Study Session'}
-                          className="w-full h-56 object-cover"
-                          onError={(e) => {
-                            e.target.src = '/default-session.jpg';
-                          }}
-                        />
-                        <span className={`absolute top-3 left-3 ${sessionStatus === 'upcoming' ? 'bg-blue-500' : sessionStatus === 'ongoing' ? 'bg-green-500' : sessionStatus === 'closed' ? 'bg-gray-500' : 'bg-yellow-500'} text-white text-xs font-semibold px-3 py-1 rounded-full shadow`}>
+                return (
+                  <motion.div
+                    key={session._id}
+                    className="study-card"
+                    whileHover={{ y: -5 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="card-header">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-xl font-bold text-[var(--color-neutral)] flex items-center gap-2">
+                          <FaBookOpen className="session-meta-icon" />
+                          {session.sessionTitle}
+                        </h3>
+                        <span className={`session-status ${sessionStatus}`}>
                           {sessionStatus.charAt(0).toUpperCase() + sessionStatus.slice(1)}
                         </span>
                       </div>
+                    </div>
 
-                      <div className="p-4 space-y-2">
-                        <h2 className="text-lg font-bold text-gray-800 line-clamp-1">
-                          {session.sessionTitle || 'Untitled Session'}
-                        </h2>
-                        <p className="text-sm text-gray-500 line-clamp-2">
-                          {session.description || 'No description available'}
-                        </p>
+                    <div className="card-body">
+                      <p className="text-[var(--color-neutral)] mb-4 line-clamp-3">
+                        {session.description}
+                      </p>
 
-                        <div className="space-y-2 text-sm mt-3">
-                          <div className="flex items-center gap-2">
-                            <FaCalendarAlt className="text-primary" />
-                            <span>
-                              {session.registrationStartDate ? dayjs(session.registrationStartDate).format('MMM D') : 'N/A'} -{' '}
-                              {session.registrationEndDate ? dayjs(session.registrationEndDate).format('MMM D, YYYY') : 'N/A'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <FaClock className="text-primary" />
-                            <span>{session.sessionDuration || 0} week program</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <FaUserGraduate className="text-primary" />
-                            <span>{session.enrolledStudents || 0} students enrolled</span>
-                          </div>
+                      <div className="space-y-3 mt-4">
+                        <div className="session-meta">
+                          <FaCalendarAlt className="session-meta-icon" />
+                          <span>
+                            {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
+                            {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
+                          </span>
                         </div>
-
-                        <div className="flex justify-between items-center pt-3 border-t border-slate-400 mt-2">
-                          {session.tutorName && (
-                            <div className="text-sm font-medium">
-                              <FaChalkboardTeacher className="inline mr-1 text-primary" />
-                              <span className="text-gray-600">Tutor: </span>
-                              <span className="text-primary">{session.tutorName}</span>
-                            </div>
-                          )}
-
-                          <Link
-                            to={`/sessions/${session._id}`}
-                            className="btn btn-sm btn-primary px-4"
-                          >
-                            View Details
-                          </Link>
+                        <div className="session-meta">
+                          <FaClock className="session-meta-icon" />
+                          <span>{session.sessionDuration} week program</span>
                         </div>
+                        <div className="session-meta">
+                          <FaUserGraduate className="session-meta-icon" />
+                          <span>{session.enrolledStudents || 0} students enrolled</span>
+                        </div>
+                        {session.tutorName && (
+                          <div className="session-meta">
+                            <FaChalkboardTeacher className="session-meta-icon" />
+                            <span>Taught by {session.tutorName}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  );
-                })}
+
+                    <div className="card-footer">
+                      <Link to={`/sessions/${session._id}`}>
+                        <button className="btn-card">
+                          View Details <FaArrowRight />
+                        </button>
+                      </Link>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           </InfiniteScroll>
         )}

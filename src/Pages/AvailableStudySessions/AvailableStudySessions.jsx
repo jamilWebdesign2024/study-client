@@ -53,73 +53,79 @@ const AvailableStudySessions = () => {
 
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sessions.map((session) => {
-          const status = getSessionStatus(session.registrationStartDate, session.registrationEndDate);
+        {sessions
+          .filter((session) => session.status === 'approved')
+          .slice(0, 6)
+          .map((session) => {
+            const status = getSessionStatus(
+              session.registrationStartDate,
+              session.registrationEndDate
+            );
 
-          return (
-            <motion.div
-              key={session._id}
-              className="study-card"
-              whileHover={{ y: -5 }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Card Header */}
-              <div className="card-header">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-[var(--color-neutral)] flex items-center gap-2">
-                    <FaBookOpen className="session-meta-icon" />
-                    {session.sessionTitle}
-                  </h3>
-                  <span className={`session-status ${status}`}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="card-body">
-                <p className="text-[var(--color-neutral)] mb-4 line-clamp-3">
-                  {session.description}
-                </p>
-
-                <div className="space-y-3 mt-4">
-                  <div className="session-meta">
-                    <FaCalendarAlt className="session-meta-icon" />
-                    <span>
-                      {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
-                      {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
+            return (
+              <motion.div
+                key={session._id}
+                className="study-card"
+                whileHover={{ y: -5 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Card Header */}
+                <div className="card-header">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-bold text-[var(--color-neutral)] flex items-center gap-2">
+                      <FaBookOpen className="session-meta-icon" />
+                      {session.sessionTitle}
+                    </h3>
+                    <span className={`session-status ${status}`}>
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
                     </span>
                   </div>
-                  <div className="session-meta">
-                    <FaClock className="session-meta-icon" />
-                    <span>{session.sessionDuration} week program</span>
-                  </div>
-                  <div className="session-meta">
-                    <FaUserGraduate className="session-meta-icon" />
-                    <span>{session.enrolledStudents || 0} students enrolled</span>
-                  </div>
-                  {session.tutorName && (
-                    <div className="session-meta">
-                      <FaChalkboardTeacher className="session-meta-icon" />
-                      <span>Taught by {session.tutorName}</span>
-                    </div>
-                  )}
                 </div>
-              </div>
 
-              {/* Card Footer */}
-              <div className="card-footer">
-                <Link to={`/view-details/${session._id}`}>
-                  <button className="btn-card">
-                    View Details <FaArrowRight />
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-          );
-        })}
+                {/* Card Body */}
+                <div className="card-body">
+                  <p className="text-[var(--color-neutral)] mb-4 line-clamp-3">
+                    {session.description}
+                  </p>
+
+                  <div className="space-y-3 mt-4">
+                    <div className="session-meta">
+                      <FaCalendarAlt className="session-meta-icon" />
+                      <span>
+                        {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
+                        {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
+                      </span>
+                    </div>
+                    <div className="session-meta">
+                      <FaClock className="session-meta-icon" />
+                      <span>{session.sessionDuration} week program</span>
+                    </div>
+                    <div className="session-meta">
+                      <FaUserGraduate className="session-meta-icon" />
+                      <span>{session.enrolledStudents || 0} students enrolled</span>
+                    </div>
+                    {session.tutorName && (
+                      <div className="session-meta">
+                        <FaChalkboardTeacher className="session-meta-icon" />
+                        <span>Taught by {session.tutorName}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Card Footer */}
+                <div className="card-footer">
+                  <Link to={`/view-details/${session._id}`}>
+                    <button className="btn-card">
+                      View Details <FaArrowRight />
+                    </button>
+                  </Link>
+                </div>
+              </motion.div>
+            );
+          })}
       </div>
     </motion.div>
   );
