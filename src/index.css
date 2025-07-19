@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 /* index.css */
 @import "tailwindcss";
 @plugin "daisyui";
@@ -16,6 +17,11 @@
   --color-success: #10B981;         /* Green for success/active */
   --color-warning: #F97316;         /* Orange */
   --color-error: #EF4444;           /* Red */
+}
+
+
+body{
+   font-family: "inter", "Anek Bangla", sans-serif;
 }
 
 /* Card Styles */
@@ -74,3 +80,7 @@
 .text-neutral {
   @apply text-[var(--color-neutral)];
 }
+
+
+
+

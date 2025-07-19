@@ -1,309 +1,352 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Link } from "react-router";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import dayjs from "dayjs";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaSearch,
-  FaSpinner,
-  FaCalendarAlt,
-  FaClock,
+  FaArrowRight,
   FaBookOpen,
-  FaUserGraduate,
+  FaCalendarAlt,
   FaChalkboardTeacher,
-  FaArrowRight
-} from 'react-icons/fa';
-import { Link } from 'react-router';
-import dayjs from 'dayjs';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
-import Loading from '../../Components/Loading';
+  FaClock,
+  FaSearch,
+  FaUserGraduate,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 
 const StudySessions = () => {
   const axiosSecure = useAxiosSecure();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState('');
-  const [status, setStatus] = useState('');
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [limit, setLimit] = useState(6);
+  const [filterStatus, setFilterStatus] = useState("");
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['study-sessions', searchTerm, category, status, page, pageSize],
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["approved-sessions", search, page, limit, filterStatus],
     queryFn: async () => {
       const res = await axiosSecure.get(
-        `/sessions/all?page=${page}&limit=${pageSize}&search=${searchTerm}&category=${category}&status=${status}`
+        `/sessions/all?page=${page}&limit=${limit}&search=${search}&status=approved`
       );
-      return {
-        sessions: res.data?.sessions || res.data || [],
-        total: res.data?.total || 0
-      };
+      return res.data;
     },
-    retry: 2,
-    retryDelay: 1000
+    keepPreviousData: true,
   });
 
-  const allSessions = (data?.sessions || []).filter(session => session.status === 'approved');
-  const totalPages = Math.ceil((data?.total || 0) / pageSize);
+  const now = dayjs();
+  const rawSessions = data?.sessions || [];
+  const totalPages = data?.totalPages || 1;
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPage(1); // Reset to first page on new search
-    refetch();
+  const getStatus = (session) => {
+    const start = dayjs(session.registrationStartDate);
+    const end = dayjs(session.registrationEndDate);
+    if (now.isBefore(start)) return "upcoming";
+    if (now.isAfter(end)) return "closed";
+    return "ongoing";
   };
 
-  const handlePageSizeChange = (size) => {
-    setPageSize(Number(size));
-    setPage(1);
-    refetch();
+  const filteredSessions = rawSessions.filter((session) => {
+    const status = getStatus(session);
+    return filterStatus ? filterStatus === status : true;
+  });
+
+  // Animation variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
   };
 
-  const getSessionStatus = (start, end) => {
-    const now = dayjs();
-    const startDate = dayjs(start);
-    const endDate = dayjs(end);
-    if (!startDate.isValid() || !endDate.isValid()) return 'unknown';
-    if (now.isBefore(startDate)) return 'upcoming';
-    if (now.isAfter(endDate)) return 'closed';
-    return 'ongoing';
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
   };
 
   return (
-    <div className="bg-base-300 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-4xl font-bold text-primary mb-3">
-            Explore Approved Study Sessions
-          </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Browse through all approved study sessions and find the perfect learning opportunity
-          </p>
-        </motion.div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-7xl mx-auto px-4 py-10"
+    >
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-4xl font-bold text-primary mb-2">Study Sessions</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Browse and join our curated selection of learning opportunities
+        </p>
+      </motion.div>
 
-        <motion.form 
-          onSubmit={handleSearch} 
-          className="mb-8 bg-white p-4 rounded-lg shadow-md"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2">
-              <FaSearch className="text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search sessions..."
-                className="bg-transparent w-full focus:outline-none"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <select
-              className="select select-bordered flex-1 max-w-xs"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">All Categories</option>
-              <option value="Mathematics">Mathematics</option>
-              <option value="Science">Science</option>
-              <option value="Language">Language</option>
-              <option value="Programming">Programming</option>
-              <option value="Business">Business</option>
-            </select>
-
-            <select
-              className="select select-bordered flex-1 max-w-xs"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="">All Statuses</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="closed">Closed</option>
-            </select>
-
-            <button 
-              type="submit" 
-              className="btn btn-primary flex-1 max-w-xs"
-            >
-              Apply Filters
-            </button>
+      {/* Controls */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+        className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm"
+      >
+        <div className="relative w-full md:w-1/2">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <FaSearch className="text-gray-400" />
           </div>
-        </motion.form>
-
-        {isLoading && <Loading />}
-
-        {isError && (
-          <motion.div 
-            className="alert alert-error mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div>
-              <span>Error loading sessions: {error.message}</span>
-              <button
-                onClick={() => refetch()}
-                className="btn btn-sm btn-ghost ml-2"
-              >
-                Retry
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Pagination Top */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <span>Items per page:</span>
-            <select 
-              className="select select-bordered select-sm"
-              value={pageSize}
-              onChange={(e) => handlePageSizeChange(e.target.value)}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="50">50</option>
-            </select>
-          </div>
-
-          <div className="flex gap-2">
-            <button 
-              className="btn btn-sm"
-              disabled={page === 1}
-              onClick={() => setPage(p => p - 1)}
-            >
-              Prev
-            </button>
-            <span className="flex items-center px-4">
-              Page {page} of {totalPages || 1}
-            </span>
-            <button 
-              className="btn btn-sm"
-              disabled={page >= totalPages}
-              onClick={() => setPage(p => p + 1)}
-            >
-              Next
-            </button>
-          </div>
+          <input
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            placeholder="Search sessions..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
         </div>
 
-        {/* Sessions List */}
-        {!isLoading && !isError && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allSessions.length > 0 ? (
-              allSessions.map((session) => {
-                const sessionStatus = getSessionStatus(session.registrationStartDate, session.registrationEndDate);
+        <div className="flex gap-3 items-center w-full md:w-auto">
+          <select
+            className="select select-bordered focus:ring-2 focus:ring-primary focus:border-transparent"
+            value={filterStatus}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">All Sessions</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="closed">Closed</option>
+          </select>
 
-                return (
-                  <motion.div
-                    key={session._id}
-                    className="card bg-white shadow-md rounded-lg overflow-hidden"
-                    whileHover={{ y: -5 }}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="card-body p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                          <FaBookOpen className="text-primary" />
-                          {session.sessionTitle}
-                        </h3>
-                        <span className={`badge ${
-                          sessionStatus === 'upcoming' ? 'badge-info' :
-                          sessionStatus === 'ongoing' ? 'badge-success' :
-                          'badge-neutral'
-                        }`}>
-                          {sessionStatus.charAt(0).toUpperCase() + sessionStatus.slice(1)}
-                        </span>
-                      </div>
+          <select
+            className="select select-bordered focus:ring-2 focus:ring-primary focus:border-transparent"
+            value={limit}
+            onChange={(e) => {
+              setLimit(parseInt(e.target.value));
+              setPage(1);
+            }}
+          >
+            <option value={6}>6 per page</option>
+            <option value={10}>10 per page</option>
+            <option value={15}>15 per page</option>
+          </select>
+        </div>
+      </motion.div>
 
-                      <p className="text-gray-600 mb-4 line-clamp-3">
-                        {session.description}
-                      </p>
-
-                      <div className="space-y-3 mt-4">
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <FaCalendarAlt className="text-primary" />
-                          <span>
-                            {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
-                            {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <FaClock className="text-primary" />
-                          <span>{session.sessionDuration} week program</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <FaUserGraduate className="text-primary" />
-                          <span>{session.enrolledStudents || 0} students enrolled</span>
-                        </div>
-                        {session.tutorName && (
-                          <div className="flex items-center gap-2 text-gray-700">
-                            <FaChalkboardTeacher className="text-primary" />
-                            <span>Taught by {session.tutorName}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-6">
-                        <Link to={`/sessions/${session._id}`}>
-                          <button className="btn btn-primary w-full">
-                            View Details <FaArrowRight />
-                          </button>
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500 text-lg">
-                  No approved sessions found matching your criteria
-                </p>
-              </div>
-            )}
+      {/* Content */}
+      {isLoading ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-20"
+        >
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+          <p className="mt-4 text-gray-600">Loading sessions...</p>
+        </motion.div>
+      ) : isError ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="alert alert-error max-w-md mx-auto"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current flex-shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Error: {error.message}</span>
           </div>
-        )}
+        </motion.div>
+      ) : filteredSessions.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-10"
+        >
+          <div className="max-w-md mx-auto p-6 bg-gray-50 rounded-lg">
+            <h3 className="text-lg font-medium text-gray-800 mb-2">
+              No sessions found
+            </h3>
+            <p className="text-gray-600">
+              Try adjusting your search or filter criteria
+            </p>
+          </div>
+        </motion.div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {filteredSessions.map((session) => {
+              const status = getStatus(session);
+              const statusColors = {
+                upcoming: "bg-blue-400 text-white",
+                ongoing: "bg-green-200 text-green-800",
+                closed: "bg-gray-100 text-gray-800",
+              };
 
-        {/* Pagination Bottom */}
-        {allSessions.length > 0 && (
-          <div className="flex justify-center mt-8">
-            <div className="flex gap-2">
-              <button 
-                className="btn btn-sm"
+              return (
+                <motion.div
+                  key={session._id}
+                  variants={item}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col"
+                >
+                  <div className=" flex-grow">
+                    <div className="flex justify-between items-start mb-3 bg-gradient-to-r from-primary/30 to-secondary/30 p-6">
+                      <h3 className="text-xl font-bold text-gray-800 line-clamp-2">
+                        {session.sessionTitle}
+                      </h3>
+                      <span
+                        className={`px-3 py-2 rounded-full text-xs font-semibold ${statusColors[status]}`}
+                      >
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </span>
+                    </div>
+
+                    <div className="p-6">
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                      {session.description}
+                    </p>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-primary/20 text-primary">
+                          <FaCalendarAlt />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Dates</p>
+                          <p className="text-sm font-medium">
+                            {dayjs(session.registrationStartDate).format(
+                              "MMM D"
+                            )}{" "}
+                            -{" "}
+                            {dayjs(session.registrationEndDate).format(
+                              "MMM D, YYYY"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-primary/20 text-primary">
+                          <FaClock />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Duration</p>
+                          <p className="text-sm font-medium">
+                            {session.sessionDuration} weeks
+                          </p>
+                        </div>
+                      </div>
+
+                      {session.tutorName && (
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-primary/20 text-primary">
+                            <FaChalkboardTeacher />
+                          </div>
+                          <div>
+                            <p className="text-xs text-gray-500">Instructor</p>
+                            <p className="text-sm font-medium">
+                              {session.tutorName}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    </div>
+                  </div>
+
+                  <div className="px-6 pb-6">
+                    <Link
+                      to={`/view-details/${session._id}`}
+                      className="btn btn-primary w-full flex items-center justify-between"
+                    >
+                      View Details
+                      <FaArrowRight />
+                    </Link>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-12"
+        >
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-gray-600">
+              Showing page {page} of {totalPages} • {filteredSessions.length}{" "}
+              sessions
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1}
-                onClick={() => setPage(p => p - 1)}
+                className={`p-2 rounded-lg ${
+                  page === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-primary/20 text-primary hover:bg-opacity-20"
+                }`}
               >
-                Prev
+                <FaChevronLeft />
               </button>
-              <span className="flex items-center px-4">
-                Page {page} of {totalPages || 1}
-              </span>
-              <button 
-                className="btn btn-sm"
-                disabled={page >= totalPages}
-                onClick={() => setPage(p => p + 1)}
+
+              {[...Array(totalPages).keys()].map((i) => (
+                <button
+                  key={i}
+                  onClick={() => setPage(i + 1)}
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    page === i + 1
+                      ? "bg-primary text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={page === totalPages}
+                className={`p-2 rounded-lg ${
+                  page === totalPages
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-primary/20 text-primary hover:bg-opacity-20"
+                }`}
               >
-                Next
+                <FaChevronRight />
               </button>
             </div>
           </div>
-        )}
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 

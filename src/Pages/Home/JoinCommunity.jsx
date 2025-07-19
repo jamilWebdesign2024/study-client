@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 
 const JoinCommunity = () => {
   return (
-    <section className="bg-black py-16 px-4 text-white">
+    <section className="py-16 px-4 text-white w-11/12 mx-auto">
       <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold mb-2">
+        <h2 className="text-xl text-black md:text-2xl lg:text-3xl font-semibold mb-2">
           আমাদের লাইভ ক্লাসগুলোতে অংশ নিতে এবং সবসময় আপডেটেড থাকতে,
         </h2>
         <h3 className="text-3xl md:text-4xl font-bold text-[var(--color-primary)] mb-12">

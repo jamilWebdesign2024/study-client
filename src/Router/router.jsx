@@ -25,7 +25,8 @@ import ViewAllStudyStudent from "../Pages/Dashboard/StudentRoute/ViewAllStudy/Vi
 import ViewAllMaterialsAdmin from "../Pages/Dashboard/Admin/ViewAllMaterialsAdmin/ViewAllMaterialsAdmin";
 import Tutors from "../Pages/shared/Tutors/Tutors";
 import StudySessions from "../Pages/Home/StudySessions";
-import AdminDashboard from "../Pages/Dashboard/DashBoardHome/AdminDashboard";
+// import AdminDashboard from "../Pages/Dashboard/DashBoardHome/AdminDashboard";
+import AdminProfile from "../Pages/Dashboard/Admin/AdminProfile/AdminProfile";
 
 
 export const router = createBrowserRouter([
@@ -127,10 +128,10 @@ export const router = createBrowserRouter([
 
 
           //Admin only Routes
-          {
-              path: 'adminDashboard',
-              element: <AdminRoutes><AdminDashboard></AdminDashboard></AdminRoutes>
-          },
+        //   {
+        //       path: 'adminDashboard',
+        //       element: <AdminRoutes><AdminDashboard></AdminDashboard></AdminRoutes>
+        //   },
           {
               path: 'viewAllUsers',
               element: <AdminRoutes><ViewAllUsers></ViewAllUsers></AdminRoutes>
@@ -142,6 +143,10 @@ export const router = createBrowserRouter([
           {
               path: 'view-all-materials-admin',
               element: <AdminRoutes><ViewAllMaterialsAdmin></ViewAllMaterialsAdmin></AdminRoutes>
+          },
+          {
+              path: 'admin-profile',
+              element: <AdminRoutes><AdminProfile></AdminProfile></AdminRoutes>
           },
 
       ]

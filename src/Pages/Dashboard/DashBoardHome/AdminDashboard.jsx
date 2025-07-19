@@ -1,207 +1,176 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { FaCheck, FaTimes, FaUsers, FaClock, FaChartPie, FaCalendarAlt } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import React, { useEffect, useState } from "react";
+import {
+  FaUsers,
+  FaUserTie,
+  FaClipboardList,
+  FaBookOpen,
+  FaComments,
+  FaChalkboardTeacher,
+  FaMoneyCheck,
+  FaStar,
+} from "react-icons/fa";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { Bar, Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import Loading from "../../../Components/Loading";
+
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const AdminDashboard = () => {
-    const axiosSecure = useAxiosSecure();
-    const [activeTab, setActiveTab] = useState('overview');
+  const axiosSecure = useAxiosSecure();
+  const [loading, setLoading] = useState(false)
 
-    const { data: sessions = [] } = useQuery({
-        queryKey: ['admin-sessions'],
-        queryFn: async () => {
-            const res = await axiosSecure.get('/sessions/admin');
-            console.log(res.data);
-            
-            return res.data;
-        }
-    });
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalTutors: 0,
+    totalSessions: 0,
+    totalBookings: 0,
+    totalReviews: 0,
+    totalNotes: 0,
+    totalMaterials: 0,
+    totalRevenue: 0,
+    averageRating: 0,
+  });
 
-    // Calculate statistics
-    const approvedSessions = sessions.filter(session => session.status === 'approved');
-    const pendingSessions = sessions.filter(session => session.status === 'pending');
-    const rejectedSessions = sessions.filter(session => session.status === 'rejected');
+  const [tutorSessions, setTutorSessions] = useState({});
 
-    const totalSessions = sessions.length;
-    const totalStudents = sessions.reduce((sum, session) => sum + (session.enrolledStudents || 0), 0);
-    const upcomingSessions = sessions.filter(session => {
-        return new Date(session.registrationStartDate) > new Date();
-    });
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true)
+        const res = await axiosSecure.get("/dashboard/admin-overview");
 
-    return (
-        <motion.div 
-            className="max-w-7xl mx-auto px-4 py-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-        >
-            <h1 className="text-3xl font-bold text-primary mb-6">Admin Dashboard</h1>
-            
-            {/* Dashboard Tabs */}
-            <div className="tabs tabs-boxed mb-8">
-                <button 
-                    className={`tab ${activeTab === 'overview' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('overview')}
-                >
-                    Overview
-                </button>
-                <button 
-                    className={`tab ${activeTab === 'sessions' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('sessions')}
-                >
-                    All Sessions
-                </button>
-                <button 
-                    className={`tab ${activeTab === 'approvals' ? 'tab-active' : ''}`}
-                    onClick={() => setActiveTab('approvals')}
-                >
-                    Pending Approvals
-                </button>
+        console.log("Admin Dashboard Data:", res.data);
+
+        setStats({
+          totalUsers: res.data.totalUsers || 0,
+          totalTutors: res.data.totalTutors || 0,
+          totalSessions: res.data.totalSessions || 0,
+          totalBookings: res.data.totalBookings || 0,
+          totalReviews: res.data.totalReviews || 0,
+          totalNotes: res.data.totalNotes || 0,
+          totalMaterials: res.data.totalMaterials || 0,
+          totalRevenue: res.data.totalRevenue || 0,
+          averageRating: res.data.averageRating || 0,
+        });
+
+        setTutorSessions(res.data.sessionBookingCount || {});
+        setLoading(false)
+      } catch (err) {
+        console.error("Admin dashboard fetch failed", err);
+      }
+    };
+
+    fetchStats();
+  }, [axiosSecure]);
+  if(loading)return <Loading></Loading>
+
+  // Prepare chart data with fallback to avoid empty charts
+  const sessionLabels = Object.keys(tutorSessions);
+  const sessionValues = Object.values(tutorSessions);
+  console.log(sessionLabels, sessionValues)
+
+  const pieData = {
+    labels: sessionLabels.length ? sessionLabels : ["No Data"],
+    datasets: [
+      {
+        data: sessionValues.length ? sessionValues : [1],
+        backgroundColor: ["#60a5fa", "#f87171", "#34d399", "#fbbf24", "#a78bfa"],
+      },
+    ],
+  };
+
+  const barData = {
+    labels: sessionLabels.length ? sessionLabels : ["No Data"],
+    datasets: [
+      {
+        label: "Bookings per Session",
+        data: sessionValues.length ? sessionValues : [0],
+        backgroundColor: "#4f46e5",
+      },
+    ],
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-10">
+      <h2 className="text-3xl font-bold text-primary text-center mb-10">
+        Admin Dashboard Overview
+      </h2>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="card bg-base-100 shadow p-4">
+          <FaUsers className="text-2xl text-primary" />
+          <h4 className="font-bold text-lg">Total Users</h4>
+          <p className="text-3xl">{stats.totalUsers}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaUserTie className="text-2xl text-secondary" />
+          <h4 className="font-bold text-lg">Total Tutors</h4>
+          <p className="text-3xl">{stats.totalTutors}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaClipboardList className="text-2xl text-accent" />
+          <h4 className="font-bold text-lg">Total Bookings</h4>
+          <p className="text-3xl">{stats.totalBookings}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaBookOpen className="text-2xl text-info" />
+          <h4 className="font-bold text-lg">Total Sessions</h4>
+          <p className="text-3xl">{stats.totalSessions}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaComments className="text-2xl text-success" />
+          <h4 className="font-bold text-lg">Total Reviews</h4>
+          <p className="text-3xl">{stats.totalReviews}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaChalkboardTeacher className="text-2xl text-warning" />
+          <h4 className="font-bold text-lg">Total Materials</h4>
+          <p className="text-3xl">{stats.totalMaterials}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaMoneyCheck className="text-2xl text-pink-600" />
+          <h4 className="font-bold text-lg">Total Revenue</h4>
+          <p className="text-3xl">৳{stats.totalRevenue}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaStar className="text-2xl text-yellow-400" />
+          <h4 className="font-bold text-lg">Average Rating</h4>
+          <p className="text-3xl">{stats.averageRating}</p>
+        </div>
+      </div>
+
+      {/* Charts */}
+      {sessionLabels.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <div className="card bg-base-100 shadow p-4">
+            <h4 className="font-bold text-lg mb-2">Bookings Per Session (Bar)</h4>
+            <div style={{ height: 300 }}>
+              <Bar data={barData} options={{ responsive: true }} />
             </div>
+          </div>
 
-            {/* Overview Tab */}
-            {activeTab === 'overview' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {/* Stats Cards */}
-                    <div className="stats bg-white shadow">
-                        <div className="stat">
-                            <div className="stat-figure text-primary">
-                                <FaChartPie className="text-2xl" />
-                            </div>
-                            <div className="stat-title">Total Sessions</div>
-                            <div className="stat-value">{totalSessions}</div>
-                        </div>
-                    </div>
-
-                    <div className="stats bg-white shadow">
-                        <div className="stat">
-                            <div className="stat-figure text-green-500">
-                                <FaCheck className="text-2xl" />
-                            </div>
-                            <div className="stat-title">Approved</div>
-                            <div className="stat-value">{approvedSessions.length}</div>
-                        </div>
-                    </div>
-
-                    <div className="stats bg-white shadow">
-                        <div className="stat">
-                            <div className="stat-figure text-yellow-500">
-                                <FaClock className="text-2xl" />
-                            </div>
-                            <div className="stat-title">Pending</div>
-                            <div className="stat-value">{pendingSessions.length}</div>
-                        </div>
-                    </div>
-
-                    <div className="stats bg-white shadow">
-                        <div className="stat">
-                            <div className="stat-figure text-red-500">
-                                <FaTimes className="text-2xl" />
-                            </div>
-                            <div className="stat-title">Rejected</div>
-                            <div className="stat-value">{rejectedSessions.length}</div>
-                        </div>
-                    </div>
-
-                    <div className="stats bg-white shadow col-span-2">
-                        <div className="stat">
-                            <div className="stat-figure text-blue-500">
-                                <FaUsers className="text-2xl" />
-                            </div>
-                            <div className="stat-title">Total Students Enrolled</div>
-                            <div className="stat-value">{totalStudents}</div>
-                        </div>
-                    </div>
-
-                    <div className="stats bg-white shadow col-span-2">
-                        <div className="stat">
-                            <div className="stat-figure text-purple-500">
-                                <FaCalendarAlt className="text-2xl" />
-                            </div>
-                            <div className="stat-title">Upcoming Sessions</div>
-                            <div className="stat-value">{upcomingSessions.length}</div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* All Sessions Tab */}
-            {activeTab === 'sessions' && (
-                <div className="overflow-x-auto bg-white rounded-lg shadow">
-                    <table className="table w-full">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Tutor</th>
-                                <th>Status</th>
-                                <th>Students</th>
-                                <th>Dates</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sessions.map(session => (
-                                <tr key={session._id}>
-                                    <td>{session.sessionTitle}</td>
-                                    <td>{session.tutorName}</td>
-                                    <td>
-                                        <span className={`badge ${
-                                            session.status === 'approved' ? 'badge-success' :
-                                            session.status === 'pending' ? 'badge-warning' : 'badge-error'
-                                        }`}>
-                                            {session.status}
-                                        </span>
-                                    </td>
-                                    <td>{session.enrolledStudents || 0}</td>
-                                    <td>
-                                        {new Date(session.classStartDate).toLocaleDateString()} - {' '}
-                                        {new Date(session.classEndDate).toLocaleDateString()}
-                                    </td>
-                                    <td>
-                                        <button className="btn btn-xs btn-info mr-2">View</button>
-                                        {session.status === 'approved' && (
-                                            <button className="btn btn-xs btn-warning">Edit</button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* Pending Approvals Tab */}
-            {activeTab === 'approvals' && (
-                <div className="space-y-4">
-                    {pendingSessions.length === 0 ? (
-                        <div className="alert alert-info">
-                            No pending sessions for approval
-                        </div>
-                    ) : (
-                        pendingSessions.map(session => (
-                            <div key={session._id} className="card bg-white shadow-lg">
-                                <div className="card-body">
-                                    <h2 className="card-title">{session.sessionTitle}</h2>
-                                    <p>By: {session.tutorName} ({session.tutorEmail})</p>
-                                    <p>Dates: {new Date(session.classStartDate).toLocaleDateString()} - {' '}
-                                    {new Date(session.classEndDate).toLocaleDateString()}</p>
-                                    <div className="card-actions justify-end mt-4">
-                                        <button className="btn btn-success btn-sm">
-                                            <FaCheck /> Approve
-                                        </button>
-                                        <button className="btn btn-error btn-sm">
-                                            <FaTimes /> Reject
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                </div>
-            )}
-        </motion.div>
-    );
+          <div className="card bg-base-100 shadow p-4">
+            <h4 className="font-bold text-lg mb-2">Session Booking Share (Pie)</h4>
+            <div style={{ height: 300 }}>
+              <Pie data={pieData} options={{ responsive: true }} />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <p className="text-center text-gray-500">No session booking data available</p>
+      )}
+    </div>
+  );
 };
 
 export default AdminDashboard;
