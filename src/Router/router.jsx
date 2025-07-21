@@ -27,6 +27,9 @@ import Tutors from "../Pages/shared/Tutors/Tutors";
 import StudySessions from "../Pages/Home/StudySessions";
 // import AdminDashboard from "../Pages/Dashboard/DashBoardHome/AdminDashboard";
 import AdminProfile from "../Pages/Dashboard/Admin/AdminProfile/AdminProfile";
+import StudentProfile from "../Pages/Dashboard/StudentRoute/StudentProfile/StudentProfile";
+import TutorRoutes from "../routes/TutorRoutes";
+import TutorProfile from "../Pages/Dashboard/TutorProfile/TutorProfile";
 
 
 export const router = createBrowserRouter([
@@ -91,23 +94,28 @@ export const router = createBrowserRouter([
         
           {
               path: 'createStudySession',
-              Component: CreateStudySession
+              element: <TutorRoutes><CreateStudySession></CreateStudySession></TutorRoutes>
           },
           {
               path: 'viewAllStudy',
-              Component: ViewAllStudy
+              element: <TutorRoutes><ViewAllStudy></ViewAllStudy></TutorRoutes>
           },
           {
               path: 'uploadMaterials',
-              Component: UploadMaterials
+              element: <TutorRoutes><UploadMaterials></UploadMaterials></TutorRoutes>
           },
           //  {/* all user are defined like tutor, student, admin */}
           {
               path: 'viewAllMaterials',
-              Component: ViewAllMaterials
+              element: <TutorRoutes><ViewAllMaterials></ViewAllMaterials></TutorRoutes>
+          },
+          {
+              path: 'tutor-profile',
+              element: <TutorRoutes><TutorProfile></TutorProfile></TutorRoutes>
           },
 
           // student define 
+          
           {
               path: 'viewBookedSession',
               element: <StudentRoutes><ViewBookedSession></ViewBookedSession></StudentRoutes>
@@ -124,6 +132,11 @@ export const router = createBrowserRouter([
           {
               path: 'viewAllStudy/student',
               element: <StudentRoutes><ViewAllStudyStudent></ViewAllStudyStudent></StudentRoutes>
+          },
+
+          {
+              path: 'student-profile',
+              element: <StudentRoutes><StudentProfile></StudentProfile></StudentRoutes>
           },
 
 

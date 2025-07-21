@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged,
 import React, { useEffect, useState } from 'react';
 import { auth } from '../Firebase/Firebase.init';
 import { AuthContext } from './AuthContext';
+import axios from 'axios';
 
 
 const googleProvider = new GoogleAuthProvider()
@@ -27,10 +28,17 @@ const AuthProvider = ({ children }) => {
         return signInWithPopup(auth, googleProvider)
     }
 
+    // const signOutUser = () => {
+    //     setLoading(true)
+    //     return signOut(auth)
+    // }
+
+    // for logout user
     const signOutUser = () => {
-        setLoading(true)
-        return signOut(auth)
-    }
+        axios.post("https://studys-phere-server.vercel.app/logout", {}, { withCredentials: true })
+            .catch(err => console.log("Logout error", err));
+        return signOut(auth);
+    };
 
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, currentUser => {
@@ -38,6 +46,21 @@ const AuthProvider = ({ children }) => {
             console.log('user in the auth state change', currentUser);
 
             setLoading(false)
+
+            //JWT related
+            if (currentUser?.email) {
+                const userData = { email: currentUser.email };
+                axios.post('https://studys-phere-server.vercel.app/jwt', userData, {
+                    withCredentials: true
+                })
+                    .then(res => {
+                        console.log('JWT response:', res.data);
+                    })
+                    .catch(error => {
+                        console.error('JWT error:', error.response?.data || error.message);
+                    });
+            }
+
         })
 
         return () => {

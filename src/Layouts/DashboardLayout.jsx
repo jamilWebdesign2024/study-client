@@ -26,9 +26,7 @@ const DashboardLayout = () => {
                 <li>
                     <NavLink
                         to="/dashboard"
-                        className={({ isActive }) =>
-                            `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
-                        }
+                        className='flex items-center gap-3 p-3 rounded-lg transition-all'
                     >
                         <FaHome className="text-lg" /> Overview
                     </NavLink>
@@ -47,11 +45,21 @@ const DashboardLayout = () => {
                 {/* Student Routes */}
                 {!roleLoading && role === 'student' && (
                     <>
+                         <NavLink
+                                to="/dashboard/student-profile"
+                                className={({ isActive }) =>
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
+                                }
+                            >
+                                <FaUser className="text-lg" /> My Profile
+                        </NavLink>
+
+
                         <li>
                             <NavLink
                                 to="/dashboard/viewBookedSession"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md' : 'hover:bg-green-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaClipboardCheck className="text-lg" /> View Booked Session
@@ -61,7 +69,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/createNote"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md' : 'hover:bg-purple-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <BsStickyFill className="text-lg" /> Create Note
@@ -71,7 +79,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/managePersonalNotes"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md' : 'hover:bg-amber-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaTasks className="text-lg" /> Manage Personal Notes
@@ -81,7 +89,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/viewAllStudy/student"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaBookOpen className="text-lg" /> View All Study
@@ -93,11 +101,20 @@ const DashboardLayout = () => {
                 {/* Tutor Routes */}
                 {!roleLoading && role === 'tutor' && (
                     <>
+                        <NavLink
+                                to="/dashboard/tutor-profile"
+                                className={({ isActive }) =>
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
+                                }
+                            >
+                                <FaUser className="text-lg" /> My Profile
+                        </NavLink>
+                        
                         <li>
                             <NavLink
                                 to="/dashboard/createStudySession"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaBookOpen className="text-lg" /> Create Study Session
@@ -107,7 +124,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/viewAllStudy"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaChalkboardTeacher className="text-lg" /> View All Study
@@ -117,7 +134,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/uploadMaterials"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md' : 'hover:bg-purple-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaUpload className="text-lg" /> Upload Materials
@@ -127,7 +144,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/viewAllMaterials"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-teal-500 to-green-600 text-white shadow-md' : 'hover:bg-teal-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaFileAlt className="text-lg" /> View All Materials
@@ -154,7 +171,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/viewAllUsers"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md' : 'hover:bg-purple-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaUsers className="text-lg" /> View All Users
@@ -164,7 +181,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/viewAllStudyAdmin"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-md' : 'hover:bg-indigo-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaBookOpen className="text-lg" /> View All Study
@@ -174,7 +191,7 @@ const DashboardLayout = () => {
                             <NavLink
                                 to="/dashboard/view-all-materials-admin"
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md' : 'hover:bg-amber-50 text-gray-700'}`
+                                    `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
                                 }
                             >
                                 <FaFileAlt className="text-lg" /> View All Materials

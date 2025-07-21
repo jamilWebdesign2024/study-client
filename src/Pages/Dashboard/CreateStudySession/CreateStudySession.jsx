@@ -46,12 +46,12 @@ const CreateStudySession = () => {
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 shadow-2xl rounded-xl mt-10"
+      className="max-w-4xl mx-auto p-6 bg-primary/20 shadow-2xl rounded-xl mt-10"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <h2 className="text-3xl font-bold text-center text-blue-600 mb-2">Create Study Session</h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
+      <h2 className="text-3xl font-extrabold text-center text-secondary mb-2">Create Study Session</h2>
+      <p className="text-center text-black mb-6">
         Fill out the form below to schedule a new study session.
       </p>
 
@@ -178,7 +178,7 @@ const CreateStudySession = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="btn btn-primary px-10 mt-4 flex items-center gap-2"
+            className="btn btn-primary px-10 mt-4 flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'"
           >
             <FaChalkboardTeacher /> Create Session
           </button>

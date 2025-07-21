@@ -7,6 +7,7 @@ import SocialLogin from './SocialLogin/SocialLogin';
 import { useForm } from 'react-hook-form';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { CgLayoutGrid } from 'react-icons/cg';
+import axios from 'axios';
 
 
 const SignUp = () => {
@@ -37,7 +38,7 @@ const handleImageUpload = async (e) => {
   const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
 
   try {
-    const res = await axiosSecure.post(imageUploadUrl, formData);
+    const res = await axios.post(imageUploadUrl, formData);
     const imageUrl = res.data.data.url;
     setProfilePic(imageUrl);
     console.log("Uploaded image URL:", imageUrl);
@@ -79,7 +80,7 @@ const handleImageUpload = async (e) => {
 
       console.log(userInfo);
       
-      await axiosSecure.post('/users', userInfo);
+      await axios.post('https://studys-phere-server.vercel.app/users', userInfo);
 
 
       Swal.fire({
