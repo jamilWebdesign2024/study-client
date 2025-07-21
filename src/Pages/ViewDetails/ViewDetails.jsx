@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import useAuth from '../../hooks/useAuth';
 import useUserRole from '../../hooks/useUserRole';
+import Loading from '../../Components/Loading';
 
 const ViewDetails = () => {
   const { id } = useParams();
@@ -84,12 +85,15 @@ const ViewDetails = () => {
       status: 'booked',
     };
 
-    if (session.registrationFee === 0) {
+    if (parseInt(session.registrationFee) === 0) {
+      console.log(session.registrationFee)
       try {
         const res = await axiosSecure.post('/bookedSessions', bookedSessionData);
         if (res.status === 201) {
           toast.success('Successfully enrolled in the session!');
+           navigate('/dashboard/viewBookedSession')
         }
+        
       } catch (err) {
         toast.error(err.response?.data?.message || 'Failed to enroll');
       }
@@ -126,7 +130,7 @@ const ViewDetails = () => {
   };
 
   if (sessionLoading || bookingLoading || !session)
-    return <div className="text-center py-20 text-lg font-semibold">Loading...</div>;
+    return <Loading></Loading>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -255,7 +259,7 @@ const ViewDetails = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Reviews</h2>
 
             {/* Review form for enrolled student */}
-            {user && role === 'student' && hasAlreadyBooked && (
+            {user && role === 'student' && (
               <div className="bg-indigo-50 p-6 rounded-lg mb-8">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">Share Your Experience</h3>
                 <div className="mb-4">
@@ -333,3 +337,8 @@ const ViewDetails = () => {
 };
 
 export default ViewDetails;
+
+
+
+
+

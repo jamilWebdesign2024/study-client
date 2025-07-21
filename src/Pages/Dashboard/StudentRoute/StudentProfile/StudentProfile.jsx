@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import useAuth from "../../../../hooks/useAuth";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
+import Loading from "../../../../Components/Loading";
 
 const StudentProfile = () => {
   const { user } = useAuth(); // assume user.email is admin's email
@@ -61,7 +62,7 @@ const StudentProfile = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading></Loading>;
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-base-100 rounded shadow">
