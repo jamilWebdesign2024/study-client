@@ -15,6 +15,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import Loading from "../../Components/Loading";
 
 const StudySessions = () => {
   const axiosSecure = useAxiosSecure();
@@ -145,8 +146,7 @@ const StudySessions = () => {
           animate={{ opacity: 1 }}
           className="text-center py-20"
         >
-          <span className="loading loading-spinner loading-lg text-primary"></span>
-          <p className="mt-4 text-gray-600">Loading sessions...</p>
+          <Loading></Loading>
         </motion.div>
       ) : isError ? (
         <motion.div

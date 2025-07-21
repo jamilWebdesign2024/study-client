@@ -3,6 +3,7 @@ import { FaChalkboardTeacher, FaSearch } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { useState } from 'react';
+import Loading from '../../../Components/Loading';
 
 const Tutors = () => {
   const axiosSecure = useAxiosSecure();
@@ -55,9 +56,7 @@ const Tutors = () => {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <span className="loading loading-spinner loading-lg text-primary"></span>
-        </div>
+        <Loading></Loading>
       ) : isError ? (
         <div className="text-center py-12">
           <p className="text-red-500 text-lg">Failed to load tutors: {error.message}</p>

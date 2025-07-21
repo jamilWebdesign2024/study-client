@@ -5,6 +5,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router';
 import { BsStickyFill } from "react-icons/bs";
 import useAuth from '../hooks/useAuth';
 import useUserRole from '../hooks/useUserRole';
+import Loading from '../Components/Loading';
 
 const DashboardLayout = () => {
     const { user } = useAuth();
@@ -13,9 +14,7 @@ const DashboardLayout = () => {
 
     if (roleLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-                <span className="loading loading-spinner text-primary loading-lg"></span>
-            </div>
+            <Loading></Loading>
         );
     }
 

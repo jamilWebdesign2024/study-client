@@ -80,7 +80,7 @@ const handleImageUpload = async (e) => {
 
       console.log(userInfo);
       
-      await axios.post('https://studys-phere-server.vercel.app/users', userInfo);
+      await axios.post('http://localhost:3000/users', userInfo);
 
 
       Swal.fire({
@@ -106,7 +106,7 @@ const handleImageUpload = async (e) => {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-8">
+      <div className="w-full max-w-md bg-primary/10 shadow-xl rounded-xl p-8">
         <h2 className="text-2xl font-bold text-center mb-6 text-primary">
           Sign Up for <span className="text-secondary">StudySphere</span>
         </h2>
@@ -201,7 +201,7 @@ const handleImageUpload = async (e) => {
           </div>
 
           {/* Submit */}
-          <button type="submit" className="btn btn-primary w-full">
+          <button type="submit" className="btn btn-primary w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' 'hover:bg-blue-50">
             Register
           </button>
         </form>

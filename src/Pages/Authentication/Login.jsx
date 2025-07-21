@@ -17,7 +17,6 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset,
   } = useForm({
@@ -105,7 +104,7 @@ const Login = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="btn btn-primary w-full">
+          <button type="submit" className="btn btn-primary w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' 'hover:bg-blue-50">
             Login
           </button>
         </form>

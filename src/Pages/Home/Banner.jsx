@@ -13,7 +13,7 @@ const Banner = () => {
         imageWrapper: 'absolute inset-0 w-full h-full overflow-hidden',
         image: 'w-full h-full object-cover object-center',
         overlay: 'absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent',
-        contentWrapper: 'absolute inset-0 z-10 flex flex-col justify-end items-center text-center pb-20 px-4',
+        contentWrapper: 'absolute inset-0 z-10 flex flex-col justify-center items-center text-center px-4 pt-16 md:pt-24',
         heading: 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-white mb-2',
         title: 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6',
         button: 'px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105'
@@ -132,8 +132,7 @@ const Banner = () => {
                             <div className={bannerStyles.contentWrapper}>
                                 <h3 
                                     className={`${bannerStyles.heading} animate-fadeInUp`}
-                                    style={{animationDelay: '0.2s'}}
-                                >
+                                    style={{animationDelay: '0.2s'}}>
                                     {slide.heading}
                                 </h3>
                                 <h2 
@@ -143,7 +142,7 @@ const Banner = () => {
                                     {slide.title}
                                 </h2>
                                 <button 
-                                    className={`${bannerStyles.button} animate-fadeInUp`}
+                                    className={`${bannerStyles.button} animate-fadeInUp bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' 'hover:bg-blue-50`}
                                     style={{animationDelay: '0.6s'}}
                                     onClick={() => window.location.href = slide.buttonLink}
                                 >
@@ -154,9 +153,9 @@ const Banner = () => {
                     </SwiperSlide>
                 ))}
                 
-                {/* Navigation Arrows */}
-                <div className="swiper-button-next"></div>
-                <div className="swiper-button-prev"></div>
+                Navigation Arrows
+                {/* <div className="swiper-button-next"></div>
+                <div className="swiper-button-prev"></div> */}
             </Swiper>
         </div>
     );

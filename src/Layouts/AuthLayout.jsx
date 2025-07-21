@@ -7,7 +7,7 @@ const AuthLayout = () => {
             <div>
                 <Navbar></Navbar>
             </div>
-            <div className="hero-content flex-col lg:flex-row-reverse">
+            <div className="flex-col lg:flex-row-reverse">
                 <div className='flex-1'>
                     <Outlet></Outlet>
                 </div>

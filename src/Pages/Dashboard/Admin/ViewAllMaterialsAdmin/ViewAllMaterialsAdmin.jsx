@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FaTrash, FaYoutube, FaFileAlt, FaLink } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
+import Loading from '../../../../Components/Loading';
 
 
 const ViewAllMaterialsAdmin = () => {
@@ -16,6 +17,7 @@ const ViewAllMaterialsAdmin = () => {
       return res.data;
     }
   });
+  
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
@@ -26,6 +28,10 @@ const ViewAllMaterialsAdmin = () => {
       Swal.fire('Deleted!', 'Material has been removed.', 'success');
     }
   });
+
+  if(isLoading){
+    return <Loading></Loading>
+  }
 
   const handleDelete = (id) => {
     Swal.fire({

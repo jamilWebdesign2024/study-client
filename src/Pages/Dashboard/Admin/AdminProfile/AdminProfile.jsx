@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import useAuth from "../../../../hooks/useAuth";
+import Loading from "../../../../Components/Loading";
 
 const AdminProfile = () => {
-  const { user } = useAuth(); // assume user.email is admin's email
+  const { user } = useAuth(); 
   const axiosSecure = useAxiosSecure();
 
   const [profile, setProfile] = useState({
@@ -14,6 +15,7 @@ const AdminProfile = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false); 
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
@@ -47,6 +49,7 @@ const AdminProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setSaving(true); 
       const res = await axiosSecure.put("/api/admin/profile", profile);
       setProfile({
         name: res.data.name,
@@ -58,10 +61,13 @@ const AdminProfile = () => {
     } catch (error) {
       console.error("Failed to update profile", error);
       toast.error("Failed to update profile");
+    } finally {
+      setSaving(false); // <-- লোডিং শেষ
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  // লোডিং দেখাবে প্রোফাইল ফেচ করার সময়
+  if (loading) return <Loading />;
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-base-100 rounded shadow">
@@ -88,45 +94,49 @@ const AdminProfile = () => {
       </div>
 
       {editing ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-semibold mb-1">Name</label>
-            <input
-              name="name"
-              type="text"
-              value={profile.name}
-              onChange={handleChange}
-              className="input input-bordered w-full"
-              required
-            />
-          </div>
+        saving ? ( 
+          <Loading />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block font-semibold mb-1">Name</label>
+              <input
+                name="name"
+                type="text"
+                value={profile.name}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block font-semibold mb-1">Email (read-only)</label>
-            <input
-              type="email"
-              value={profile.email}
-              readOnly
-              className="input input-bordered w-full bg-gray-100 cursor-not-allowed"
-            />
-          </div>
+            <div>
+              <label className="block font-semibold mb-1">Email (read-only)</label>
+              <input
+                type="email"
+                value={profile.email}
+                readOnly
+                className="input input-bordered w-full bg-gray-100 cursor-not-allowed"
+              />
+            </div>
 
-          <div>
-            <label className="block font-semibold mb-1">Photo URL</label>
-            <input
-              name="photo"
-              type="text"
-              value={profile.photo}
-              onChange={handleChange}
-              className="input input-bordered w-full"
-              placeholder="Paste photo URL"
-            />
-          </div>
+            <div>
+              <label className="block font-semibold mb-1">Photo URL</label>
+              <input
+                name="photo"
+                type="text"
+                value={profile.photo}
+                onChange={handleChange}
+                className="input input-bordered w-full"
+                placeholder="Paste photo URL"
+              />
+            </div>
 
-          <button type="submit" className="btn btn-success w-full">
-            Save Profile
-          </button>
-        </form>
+            <button type="submit" className="btn btn-success w-full">
+              Save Profile
+            </button>
+          </form>
+        )
       ) : (
         <div className="space-y-2">
           <p><strong>Name:</strong> {profile.name}</p>

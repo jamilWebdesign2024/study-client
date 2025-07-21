@@ -7,6 +7,7 @@ import { FaCheck, FaTimes, FaEdit, FaTrash } from 'react-icons/fa';
 import { Dialog } from '@headlessui/react';
 import { motion } from 'framer-motion';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
+import Loading from '../../../../Components/Loading';
 
 const ViewAllStudyAdmin = () => {
   const axiosSecure = useAxiosSecure();
@@ -27,7 +28,7 @@ const ViewAllStudyAdmin = () => {
     registrationFee: 0,
   });
 
-  const { data: sessions = [], refetch } = useQuery({
+  const { data: sessions = [], refetch, roleLoading } = useQuery({
     queryKey: ['all-study-sessions'],
     queryFn: async () => {
       const res = await axiosSecure.get('/sessions/all/admin');
@@ -35,6 +36,8 @@ const ViewAllStudyAdmin = () => {
       return res.data.filter(session => session.status !== 'rejected');
     }
   });
+  
+    if (roleLoading) return <Loading />
 
   const handleApproveClick = (session) => {
     setSelectedSession(session);
