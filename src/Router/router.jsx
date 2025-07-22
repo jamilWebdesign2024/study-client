@@ -30,12 +30,14 @@ import AdminProfile from "../Pages/Dashboard/Admin/AdminProfile/AdminProfile";
 import StudentProfile from "../Pages/Dashboard/StudentRoute/StudentProfile/StudentProfile";
 import TutorRoutes from "../routes/TutorRoutes";
 import TutorProfile from "../Pages/Dashboard/TutorProfile/TutorProfile";
+import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: RootLayout,
+    element: <RootLayout/>,
+    errorElement: <ErrorPage></ErrorPage>,
     children:[
         {
             index: true,
@@ -67,7 +69,8 @@ export const router = createBrowserRouter([
   },
   {
         path: '/',
-        Component: AuthLayout,
+        element: <AuthLayout/>,
+        errorElement: <ErrorPage></ErrorPage>,
         children:[
             {
                 path: 'login',
@@ -85,6 +88,7 @@ export const router = createBrowserRouter([
   {
       path: '/dashboard',
       element: <PrivateRoutes><DashboardLayout></DashboardLayout></PrivateRoutes>,
+        errorElement: <ErrorPage></ErrorPage>,
       children: [
           // tutor routes
             {
