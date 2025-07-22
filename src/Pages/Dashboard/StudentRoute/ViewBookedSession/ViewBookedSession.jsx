@@ -7,6 +7,7 @@ import { RiMoneyDollarCircleLine } from 'react-icons/ri';
 import dayjs from 'dayjs';
 import useAuth from '../../../../hooks/useAuth';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
+import Loading from '../../../../Components/Loading';
 
 const ViewBookedSession = () => {
   const { user } = useAuth();
@@ -24,9 +25,7 @@ const ViewBookedSession = () => {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
+      <Loading></Loading>
     );
   }
 

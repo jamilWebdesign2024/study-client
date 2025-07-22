@@ -6,6 +6,7 @@ import axios from 'axios';
 import Loading from '../Components/Loading';
 
 
+
 const googleProvider = new GoogleAuthProvider()
 
 const AuthProvider = ({ children }) => {
@@ -90,10 +91,6 @@ const AuthProvider = ({ children }) => {
             unSubscribe();
         }
     }, [])
-
-
-
-
 
 
     const authInfo = {

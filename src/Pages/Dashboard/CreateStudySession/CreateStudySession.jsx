@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaChalkboardTeacher, FaCalendarAlt, FaRegClock } from 'react-icons/fa';
-
-
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useAuth from '../../../hooks/useAuth';
+import Loading from '../../../Components/Loading';
+ // ✅ Update this path based on your project
 
 const CreateStudySession = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -20,6 +21,7 @@ const CreateStudySession = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    setLoading(true); // ✅ Start loading
     const sessionData = {
       ...data,
       tutorName: user?.displayName,
@@ -41,8 +43,16 @@ const CreateStudySession = () => {
     } catch (err) {
       console.error(err);
       toast.error('Failed to create session');
+    }finally {
+      setLoading(false)
     }
   };
+
+   // ✅ Show loading if true
+  if (loading) {
+    return <Loading />;
+  }
+
 
   return (
     <motion.div

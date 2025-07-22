@@ -5,6 +5,7 @@ import { FaDownload, FaLink, FaYoutube } from "react-icons/fa";
 import { motion } from "framer-motion";
 import useAuth from "../../../../hooks/useAuth";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
+import Loading from "../../../../Components/Loading";
 
 const ViewAllStudyStudent = () => {
   const { user } = useAuth();
@@ -58,7 +59,7 @@ const ViewAllStudyStudent = () => {
       {!selectedSessionId && (
         <>
           {isBookingLoading ? (
-            <p className="text-center text-blue-600 text-lg">Loading sessions...</p>
+            <Loading></Loading>
           ) : bookedSessions.length === 0 ? (
             <p className="text-center text-gray-600">
               You haven’t booked any sessions yet.

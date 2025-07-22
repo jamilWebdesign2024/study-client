@@ -5,6 +5,7 @@ import { FaCloudUploadAlt, FaLink, FaImage, FaSpinner, FaYoutube, FaFileAlt, FaT
 import { motion } from 'framer-motion';
 import useAuth from '../../../hooks/useAuth';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import Loading from '../../../Components/Loading';
 
 const UploadMaterials = () => {
   const { user } = useAuth();
@@ -35,6 +36,10 @@ const UploadMaterials = () => {
       }
     },
   });
+
+  if(sessionsLoading){
+    return <Loading/>
+  }
 
   const getLinkType = (url) => {
     if (!url) return 'other';
@@ -187,10 +192,10 @@ const UploadMaterials = () => {
       transition={{ duration: 0.4 }}
     >
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold flex justify-center items-center gap-2 text-indigo-600 dark:text-indigo-400">
+        <h2 className="text-3xl font-extrabold flex justify-center items-center gap-2 text-primary dark:text-primary">
           <FaCloudUploadAlt /> Upload Study Materials
         </h2>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-black dark:text-black/80">
           Upload images and multiple resource links (YouTube, Google Docs, Drive, etc.)
         </p>
       </div>
@@ -204,7 +209,7 @@ const UploadMaterials = () => {
       )}
 
       <div className="mb-6">
-        <label className="block mb-2 font-semibold text-gray-700 dark:text-gray-200">
+        <label className="block mb-2 font-semibold text-black dark:text-secondary">
           Select Approved Session
         </label>
         <select
@@ -237,9 +242,9 @@ const UploadMaterials = () => {
       </div>
 
       {selectedSession && (
-        <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-slate-800 p-6 rounded-xl shadow border border-slate-200 dark:border-slate-700">
+        <form onSubmit={handleSubmit} className="space-y-5 bg-white dark:bg-white p-6 rounded-xl shadow border border-slate-200 dark:border-slate-700">
           <div>
-            <label className="font-semibold text-gray-700 dark:text-gray-300">
+            <label className="font-semibold text-black dark:text-black">
               Title
             </label>
             <input
@@ -263,31 +268,31 @@ const UploadMaterials = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="font-semibold text-gray-700 dark:text-gray-300">
+              <label className="font-semibold text-black dark:text-black">
                 Session ID
               </label>
               <input
                 type="text"
                 value={selectedSession._id}
                 readOnly
-                className="mt-1 block w-full p-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-700 rounded-md"
+                className="mt-1 block cursor-not-allowed w-full p-2 bg-white text-gray-400 dark:bg-white border border-gray-300 dark:border-slate-700 rounded-md"
               />
             </div>
             <div>
-              <label className="font-semibold text-gray-700 dark:text-gray-300">
+              <label className="font-semibold text-black dark:text-black">
                 Tutor Email
               </label>
               <input
                 type="email"
                 value={user.email}
                 readOnly
-                className="mt-1 block w-full p-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-700 rounded-md"
+                className="mt-1 block w-full p-2 cursor-not-allowed bg-white text-gray-400 dark:bg-white border border-gray-300 dark:border-slate-700 rounded-md"
               />
             </div>
           </div>
 
           <div>
-            <label className="font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+            <label className="font-semibold text-black dark:text-black flex items-center gap-2">
               <FaImage /> Upload Image (Max 5MB)
             </label>
             <input
@@ -315,7 +320,7 @@ const UploadMaterials = () => {
           </div>
 
           <div>
-            <label className="font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+            <label className="font-semibold text-black dark:text-black flex items-center gap-2">
               <FaLink /> Resource Links (YouTube, Docs, Drive, etc.)
             </label>
             {formData.resourceLinks.map((link, index) => (

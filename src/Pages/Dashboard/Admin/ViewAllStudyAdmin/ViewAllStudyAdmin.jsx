@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -11,9 +10,16 @@ import Loading from '../../../../Components/Loading';
 
 const ViewAllStudyAdmin = () => {
   const axiosSecure = useAxiosSecure();
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Modal & form state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+
   const [selectedSession, setSelectedSession] = useState(null);
   const [feeType, setFeeType] = useState('free');
   const [amount, setAmount] = useState(0);
@@ -28,16 +34,27 @@ const ViewAllStudyAdmin = () => {
     registrationFee: 0,
   });
 
-  const { data: sessions = [], refetch, roleLoading } = useQuery({
-    queryKey: ['all-study-sessions'],
+  // Fetch sessions with pagination
+  const { data = {}, refetch, isLoading } = useQuery({
+    queryKey: ['all-study-sessions', currentPage, itemsPerPage],
     queryFn: async () => {
-      const res = await axiosSecure.get('/sessions/all/admin');
-      // Filter out rejected sessions from the admin view
-      return res.data.filter(session => session.status !== 'rejected');
-    }
+      const res = await axiosSecure.get(
+        `/sessions/all/admin?page=${currentPage}&limit=${itemsPerPage}`
+      );
+      return res.data;
+    },
   });
-  
-    if (roleLoading) return <Loading />
+
+  if (isLoading) return <Loading />;
+
+  const sessions = data.sessions || [];
+  const totalCount = data.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(parseInt(e.target.value));
+    setCurrentPage(1);
+  };
 
   const handleApproveClick = (session) => {
     setSelectedSession(session);
@@ -55,11 +72,11 @@ const ViewAllStudyAdmin = () => {
 
   const handleReject = async () => {
     try {
-      const res = await axiosSecure.patch(`/sessions/reject/${selectedSession._id}`, { 
+      const res = await axiosSecure.patch(`/sessions/reject/${selectedSession._id}`, {
         status: 'rejected',
         rejectionReason,
         feedback,
-        rejectedAt: new Date()
+        rejectedAt: new Date(),
       });
       if (res.data.modifiedCount > 0) {
         toast.success('Session rejected with feedback!');
@@ -87,31 +104,30 @@ const ViewAllStudyAdmin = () => {
 
   const handleUpdateChange = (e) => {
     const { name, value } = e.target;
-    setUpdateData(prev => ({
+    setUpdateData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleUpdateSubmit = async () => {
     try {
       const res = await axiosSecure.patch(`/update/${selectedSession._id}`, updateData);
-
       const msg = res.data?.message;
 
-      if (msg === "Update successful") {
-        toast.success("Session updated successfully!");
+      if (msg === 'Update successful') {
+        toast.success('Session updated successfully!');
         refetch();
         setIsUpdateModalOpen(false);
-      } else if (msg === "No changes were made") {
-        toast.info("No changes were made.");
-      } else if (msg === "Session not found") {
-        toast.error("Session not found.");
+      } else if (msg === 'No changes were made') {
+        toast.info('No changes were made.');
+      } else if (msg === 'Session not found') {
+        toast.error('Session not found.');
       } else {
-        toast.error("Something went wrong.");
+        toast.error('Something went wrong.');
       }
     } catch (err) {
-      toast.error("Failed to update session");
+      toast.error('Failed to update session');
       console.error(err);
     }
   };
@@ -120,7 +136,7 @@ const ViewAllStudyAdmin = () => {
     try {
       const res = await axiosSecure.patch(`/sessions/approve/${selectedSession._id}`, {
         status: 'approved',
-        registrationFee: feeType === 'free' ? 0 : parseFloat(amount)
+        registrationFee: feeType === 'free' ? 0 : parseFloat(amount),
       });
       if (res.data.modifiedCount > 0) {
         toast.success('Session approved!');
@@ -159,6 +175,24 @@ const ViewAllStudyAdmin = () => {
         Approve or reject pending sessions. Update/delete approved ones.
       </p>
 
+      {/* Items per page selector */}
+      <div className="mb-4 flex items-center justify-end gap-2">
+        <label htmlFor="itemsPerPage" className="font-medium">
+          Items per page:
+        </label>
+        <select
+          id="itemsPerPage"
+          className="select select-bordered w-24"
+          value={itemsPerPage}
+          onChange={handleItemsPerPageChange}
+        >
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={15}>15</option>
+          <option value={20}>20</option>
+        </select>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full border rounded-lg shadow-md">
           <thead className="bg-purple-100 text-gray-800">
@@ -175,7 +209,7 @@ const ViewAllStudyAdmin = () => {
           <tbody>
             {sessions.map((session, index) => (
               <tr key={session._id}>
-                <td>{index + 1}</td>
+                <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
                 <td>{session.sessionTitle}</td>
                 <td>
                   <div>
@@ -197,12 +231,12 @@ const ViewAllStudyAdmin = () => {
                       session.status === 'pending'
                         ? 'bg-yellow-500'
                         : session.status === 'approved'
-                          ? 'bg-green-500'
-                          : 'bg-gray-500'
+                        ? 'bg-green-500'
+                        : 'bg-gray-500'
                     }`}
                   >
-                    {session.status === 'pending' && session.isResubmitted 
-                      ? 'New Request Pending' 
+                    {session.status === 'pending' && session.isResubmitted
+                      ? 'New Request Pending'
                       : session.status}
                   </span>
                 </td>
@@ -213,12 +247,14 @@ const ViewAllStudyAdmin = () => {
                       <button
                         onClick={() => handleApproveClick(session)}
                         className="btn btn-sm btn-success"
+                        title="Approve"
                       >
                         <FaCheck />
                       </button>
                       <button
                         onClick={() => handleRejectClick(session)}
                         className="btn btn-sm btn-error"
+                        title="Reject"
                       >
                         <FaTimes />
                       </button>
@@ -229,12 +265,14 @@ const ViewAllStudyAdmin = () => {
                       <button
                         onClick={() => handleUpdateClick(session)}
                         className="btn btn-sm btn-info"
+                        title="Update"
                       >
                         <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDelete(session._id)}
                         className="btn btn-sm btn-outline btn-error"
+                        title="Delete"
                       >
                         <FaTrash />
                       </button>
@@ -245,6 +283,35 @@ const ViewAllStudyAdmin = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+        >
+          Prev
+        </button>
+
+        {[...Array(totalPages).keys()].map((page) => (
+          <button
+            key={page + 1}
+            className={`btn btn-sm ${currentPage === page + 1 ? 'btn-primary' : ''}`}
+            onClick={() => setCurrentPage(page + 1)}
+          >
+            {page + 1}
+          </button>
+        ))}
+
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </button>
       </div>
 
       {/* Approval Modal */}
@@ -293,10 +360,10 @@ const ViewAllStudyAdmin = () => {
 
       {/* Rejection Modal */}
       <Dialog open={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} className="fixed z-50">
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center px-4">
+        <div className="fixed inset-0 bg-black/80 bg-opacity-30 flex items-center justify-center px-4">
           <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full">
             <Dialog.Title className="text-lg font-bold mb-4">Reject Session</Dialog.Title>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block mb-1 font-medium">Rejection Reason *</label>
@@ -330,8 +397,8 @@ const ViewAllStudyAdmin = () => {
               <button className="btn btn-outline" onClick={() => setIsRejectModalOpen(false)}>
                 Cancel
               </button>
-              <button 
-                className="btn btn-error" 
+              <button
+                className="btn btn-error"
                 onClick={handleReject}
                 disabled={!rejectionReason}
               >
@@ -434,3 +501,4 @@ const ViewAllStudyAdmin = () => {
 };
 
 export default ViewAllStudyAdmin;
+

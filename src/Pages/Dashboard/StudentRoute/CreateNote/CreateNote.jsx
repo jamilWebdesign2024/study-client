@@ -14,12 +14,14 @@ import {
 } from 'react-icons/fi';
 import useAuth from '../../../../hooks/useAuth';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
+import Loading from '../../../../Components/Loading';
+// ✅ Import your Loading component
 
 const CreateNote = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [loading, setLoading] = useState(false); // ✅ local loading
+
   const {
     register,
     handleSubmit,
@@ -37,11 +39,6 @@ const CreateNote = () => {
     toast.success('Note created successfully!', {
       position: "top-right",
       autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
       theme: "colored",
       style: {
         background: '#4BB543',
@@ -68,7 +65,7 @@ const CreateNote = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    setLoading(true);
     try {
       const res = await axiosSecure.post('/notes', {
         ...data,
@@ -85,9 +82,14 @@ const CreateNote = () => {
       console.error('Error creating note:', error);
       showErrorAlert(error.response?.data?.message || 'Failed to create note');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
+
+  // ✅ Show loading screen during submission
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <motion.div
@@ -113,6 +115,7 @@ const CreateNote = () => {
             </p>
             
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* email input */}
               <div className="relative">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FiMail className="mr-2" />
@@ -130,6 +133,7 @@ const CreateNote = () => {
                 </div>
               </div>
 
+              {/* title input */}
               <div className="relative">
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FiType className="mr-2" />
@@ -164,6 +168,7 @@ const CreateNote = () => {
                 )}
               </div>
 
+              {/* description input */}
               <div>
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
                   <FiEdit2 className="mr-2" />
@@ -198,11 +203,12 @@ const CreateNote = () => {
                 )}
               </div>
 
+              {/* action buttons */}
               <div className="flex justify-end space-x-3 pt-4">
                 <motion.button
                   type="button"
                   onClick={() => reset()}
-                  disabled={isSubmitting}
+                  disabled={loading}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
@@ -214,12 +220,12 @@ const CreateNote = () => {
                   type="submit"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  disabled={isSubmitting}
+                  disabled={loading}
                   className={`flex items-center px-6 py-2 border border-transparent rounded-lg shadow-sm text-white font-medium ${
-                    isSubmitting ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
+                    loading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
                   } transition-colors`}
                 >
-                  {isSubmitting ? (
+                  {loading ? (
                     <>
                       <FiLoader className="animate-spin mr-2" />
                       Creating...

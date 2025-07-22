@@ -18,6 +18,7 @@ import Swal from 'sweetalert2';
 import { Link } from 'react-router';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
 import useAuth from '../../../../hooks/useAuth';
+import Loading from '../../../../Components/Loading';
 
 const ManagePersonalNotes = () => {
     const { user } = useAuth();
@@ -148,9 +149,7 @@ const ManagePersonalNotes = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <FiLoader className="animate-spin text-4xl text-indigo-600" />
-            </div>
+            <Loading></Loading>
         );
     }
 
