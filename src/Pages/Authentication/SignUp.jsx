@@ -80,7 +80,7 @@ const handleImageUpload = async (e) => {
 
       console.log(userInfo);
       
-      await axios.post('http://localhost:3000/users', userInfo);
+      await axios.post('https://studys-phere-server.vercel.app/users', userInfo);
 
 
       Swal.fire({
