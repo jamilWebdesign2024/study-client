@@ -48,8 +48,7 @@ const AdminDashboard = () => {
         setLoading(true)
         const res = await axiosSecure.get("/dashboard/admin-overview");
 
-        console.log("Admin Dashboard Data:", res.data);
-
+       
         setStats({
           totalUsers: res.data.totalUsers || 0,
           totalTutors: res.data.totalTutors || 0,
@@ -76,8 +75,7 @@ const AdminDashboard = () => {
   // Prepare chart data with fallback to avoid empty charts
   const sessionLabels = Object.keys(tutorSessions);
   const sessionValues = Object.values(tutorSessions);
-  console.log(sessionLabels, sessionValues)
-
+ 
   const pieData = {
     labels: sessionLabels.length ? sessionLabels : ["No Data"],
     datasets: [

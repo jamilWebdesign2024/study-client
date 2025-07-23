@@ -9,7 +9,7 @@ const AdminRoutes = ({ children }) => {
     const { user, loading } = useAuth();
     const { role, roleLoading } = useUserRole();
 
-    console.log(role);
+    
 
 
     if (loading || roleLoading) {

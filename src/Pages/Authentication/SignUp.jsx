@@ -29,7 +29,7 @@ const SignUp = () => {
   // imagbb uploading
 const handleImageUpload = async (e) => {
   const image = e.target.files[0];
-  console.log(image);
+  
   
 
   const formData = new FormData();
@@ -41,8 +41,7 @@ const handleImageUpload = async (e) => {
     const res = await axios.post(imageUploadUrl, formData);
     const imageUrl = res.data.data.url;
     setProfilePic(imageUrl);
-    console.log("Uploaded image URL:", imageUrl);
-  } catch (error) {
+    } catch (error) {
     console.error("Image upload failed", error);
   }
 };
@@ -78,7 +77,6 @@ const handleImageUpload = async (e) => {
         last_log_in: new Date().toISOString()
       };
 
-      console.log(userInfo);
       
       await axios.post('https://studys-phere-server.vercel.app/users', userInfo);
 

@@ -86,7 +86,7 @@ const ViewDetails = () => {
     };
 
     if (parseInt(session.registrationFee) === 0) {
-      console.log(session.registrationFee)
+      
       try {
         const res = await axiosSecure.post('/bookedSessions', bookedSessionData);
         if (res.status === 201) {

@@ -31,7 +31,6 @@ const CreateStudySession = () => {
       createdAt: new Date().toISOString(),
     };
 
-    console.log(sessionData);
     
 
     try {
