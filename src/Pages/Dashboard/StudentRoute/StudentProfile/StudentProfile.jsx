@@ -5,7 +5,7 @@ import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import Loading from "../../../../Components/Loading";
 
 const StudentProfile = () => {
-  const { user } = useAuth(); // assume user.email is admin's email
+  const { user } = useAuth(); 
   const axiosSecure = useAxiosSecure();
 
   const [profile, setProfile] = useState({

@@ -28,7 +28,7 @@ const ViewAllUsers = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchUsers();
-    }, 500); // Debounce search
+    }, 500); 
 
     return () => clearTimeout(timer);
   }, [searchTerm]);

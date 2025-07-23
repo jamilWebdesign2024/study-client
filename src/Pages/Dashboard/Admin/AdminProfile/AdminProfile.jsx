@@ -62,11 +62,11 @@ const AdminProfile = () => {
       console.error("Failed to update profile", error);
       toast.error("Failed to update profile");
     } finally {
-      setSaving(false); // <-- লোডিং শেষ
+      setSaving(false); 
     }
   };
 
-  // লোডিং দেখাবে প্রোফাইল ফেচ করার সময়
+ 
   if (loading) return <Loading />;
 
   return (

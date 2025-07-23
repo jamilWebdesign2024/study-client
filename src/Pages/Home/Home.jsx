@@ -1,11 +1,12 @@
 import React from 'react';
 import AvailableStudySessions from '../AvailableStudySessions/AvailableStudySessions';
 import Banner from './Banner';
-import PopulerCourses from './JoinCommunity';
-import StudentTestimonials from './JoinCommunity';
-import WhyChooseUs from './JoinCommunity';
-import JoinCommunity from './JoinCommunity';
+import PopulerCourses from './FAQ';
+import StudentTestimonials from './FAQ';
+import WhyChooseUs from './FAQ';
+import JoinCommunity from './FAQ';
 import WhyChooseUsSection from './WhyChooseUsSection';
+import FAQ from './FAQ';
 
 const Home = () => {
     return (
@@ -13,7 +14,7 @@ const Home = () => {
             <Banner></Banner>
             <AvailableStudySessions></AvailableStudySessions>
             <WhyChooseUsSection></WhyChooseUsSection>
-            <JoinCommunity></JoinCommunity>
+            <FAQ></FAQ>
         </div>
     );
 };

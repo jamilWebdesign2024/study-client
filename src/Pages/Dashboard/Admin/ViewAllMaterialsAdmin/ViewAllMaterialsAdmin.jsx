@@ -13,7 +13,7 @@ const ViewAllMaterialsAdmin = () => {
   const { data: materials = [], isLoading } = useQuery({
     queryKey: ['adminAllMaterials'],
     queryFn: async () => {
-      const res = await axiosSecure.get('/admin/materials'); // ✅ Updated route
+      const res = await axiosSecure.get('/admin/materials'); 
       return res.data;
     }
   });
@@ -21,7 +21,7 @@ const ViewAllMaterialsAdmin = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      return await axiosSecure.delete(`/materials/${id}`); // ✅ delete route same
+      return await axiosSecure.delete(`/materials/${id}`); 
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['adminAllMaterials']);

@@ -4,15 +4,15 @@ import useAuth from './useAuth';
 import useAxiosSecure from './useAxiosSecure';
 
 const useUserRole = () => {
-  const { user, loading: authLoading } = useAuth(); // Firebase থেকে current user
-  const axiosSecure = useAxiosSecure(); // secure axios instance
+  const { user, loading: authLoading } = useAuth(); 
+  const axiosSecure = useAxiosSecure(); 
 
   const { data: userInfo = {}, isLoading: userLoading, refetch } = useQuery({
     enabled: !authLoading && !!user?.email,
     queryKey: ['userInfo', user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/users/${user?.email}`); // MongoDB থেকে data আনবে
-      return res.data; // { name, email, photo, role, ... }
+      const res = await axiosSecure.get(`/users/${user?.email}`); 
+      return res.data; 
     }
   });
 

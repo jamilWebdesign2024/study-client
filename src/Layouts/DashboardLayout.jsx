@@ -30,16 +30,7 @@ const DashboardLayout = () => {
                         <FaHome className="text-lg" /> Overview
                     </NavLink>
                 </li>
-                {/* <li>
-                    <NavLink
-                        to="/dashboard/profile"
-                        className={({ isActive }) =>
-                            `flex items-center gap-3 p-3 rounded-lg transition-all ${isActive ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' : 'hover:bg-blue-50 text-gray-700'}`
-                        }
-                    >
-                        <FaUser className="text-lg" /> My Profile
-                    </NavLink>
-                </li> */}
+                
 
                 {/* Student Routes */}
                 {!roleLoading && role === 'student' && (

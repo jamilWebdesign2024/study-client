@@ -37,7 +37,7 @@ const ManagePersonalNotes = () => {
         queryKey: ['notes', user?.email],
         queryFn: async () => {
             const res = await axiosSecure.get(`/notes?email=${user.email}`);
-            return res.data.data || res.data; // Handle both response structures
+            return res.data.data || res.data; 
         },
         enabled: !!user?.email,
     });

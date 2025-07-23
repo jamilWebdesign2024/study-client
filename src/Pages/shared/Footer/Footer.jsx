@@ -57,12 +57,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                   Contact
                 </Link>
               </li>
@@ -74,28 +74,28 @@ const Footer = () => {
             <h3 className="text-lg font-semibold">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/blog" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">
-                  Terms of Service
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
+                  Available Study Sessions
                 </Link>
               </li>
               <li>
-                <Link to="/support" className="text-gray-400 hover:text-white transition-colors">
-                  Support
+                <Link to="#" className="text-gray-400 hover:text-white transition-colors">
+                  Why Choose us Section
                 </Link>
               </li>
             </ul>
@@ -108,13 +108,13 @@ const Footer = () => {
               <div className="flex items-start space-x-3">
                 <MdLocationOn className="text-xl text-blue-500 mt-1 flex-shrink-0" />
                 <p className="text-gray-400">
-                  123 Education Street, Learning City, LC 12345
+                  Firozshah Housing Estate, Akborshah, Chattogram
                 </p>
               </div>
               <div className="flex items-center space-x-3">
                 <MdEmail className="text-xl text-blue-500" />
                 <a href="mailto:info@studysphere.com" className="text-gray-400 hover:text-white transition-colors">
-                  info@studysphere.com
+                  jamil@studysphere.com
                 </a>
               </div>
               <div className="flex items-center space-x-3">

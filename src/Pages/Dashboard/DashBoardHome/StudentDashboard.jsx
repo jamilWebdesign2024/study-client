@@ -1,4 +1,3 @@
-// ✅ FRONTEND: StudentDashboard.jsx
 import React, { useEffect, useState } from "react";
 import {
   FaBookOpen,

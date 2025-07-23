@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useAuth from '../../../hooks/useAuth';
 import Loading from '../../../Components/Loading';
- // ✅ Update this path based on your project
+ 
 
 const CreateStudySession = () => {
   const { user } = useAuth();
@@ -21,7 +21,7 @@ const CreateStudySession = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    setLoading(true); // ✅ Start loading
+    setLoading(true); // Start loading
     const sessionData = {
       ...data,
       tutorName: user?.displayName,
@@ -48,7 +48,7 @@ const CreateStudySession = () => {
     }
   };
 
-   // ✅ Show loading if true
+   // Show loading if true
   if (loading) {
     return <Loading />;
   }

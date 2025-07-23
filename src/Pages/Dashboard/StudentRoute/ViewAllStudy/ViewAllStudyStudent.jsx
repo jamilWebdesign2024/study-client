@@ -12,7 +12,7 @@ const ViewAllStudyStudent = () => {
   const axiosSecure = useAxiosSecure();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
 
-  // ✅ Get booked sessions by student email
+  // Get booked sessions by student email
   const {
     data: bookedSessions = [],
     isLoading: isBookingLoading,
@@ -27,7 +27,7 @@ const ViewAllStudyStudent = () => {
     },
   });
 
-  // ✅ Get materials of selected session
+  // Get materials of selected session
   const {
     data: materials = [],
     isLoading: isMaterialsLoading,
@@ -42,7 +42,7 @@ const ViewAllStudyStudent = () => {
     },
   });
 
-  // ✅ Download utility
+  
   const handleDownload = async (url, title) => {
     const response = await fetch(url);
     const blob = await response.blob();

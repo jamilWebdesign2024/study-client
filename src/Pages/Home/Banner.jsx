@@ -23,7 +23,7 @@ const Banner = () => {
     const slides = [
         {
             id: 1,
-            image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+            image: 'https://i.postimg.cc/9M9JYwSB/book-bg-85aaf0c1dd945315.jpg',
             heading: 'Elevate Your Learning',
             title: 'Join Our Interactive Study Sessions',
             buttonText: 'Explore Courses',
@@ -144,7 +144,6 @@ const Banner = () => {
                                 <button 
                                     className={`${bannerStyles.button} animate-fadeInUp bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md' 'hover:bg-blue-50`}
                                     style={{animationDelay: '0.6s'}}
-                                    onClick={() => window.location.href = slide.buttonLink}
                                 >
                                     {slide.buttonText}
                                 </button>
@@ -153,9 +152,7 @@ const Banner = () => {
                     </SwiperSlide>
                 ))}
                 
-                Navigation Arrows
-                {/* <div className="swiper-button-next"></div>
-                <div className="swiper-button-prev"></div> */}
+               
             </Swiper>
         </div>
     );

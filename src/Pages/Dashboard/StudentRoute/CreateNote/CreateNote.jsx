@@ -15,12 +15,12 @@ import {
 import useAuth from '../../../../hooks/useAuth';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
 import Loading from '../../../../Components/Loading';
-// ✅ Import your Loading component
+
 
 const CreateNote = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const [loading, setLoading] = useState(false); // ✅ local loading
+  const [loading, setLoading] = useState(false); //loading
 
   const {
     register,
@@ -86,7 +86,7 @@ const CreateNote = () => {
     }
   };
 
-  // ✅ Show loading screen during submission
+  // Show loading screen during submission
   if (loading) {
     return <Loading />;
   }

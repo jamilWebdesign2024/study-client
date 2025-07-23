@@ -6,7 +6,7 @@ import Loading from "../../../Components/Loading";
 
 
 const TutorProfile = () => {
-  const { user } = useAuth(); // assume user.email is admin's email
+  const { user } = useAuth(); 
   const axiosSecure = useAxiosSecure();
 
   const [profile, setProfile] = useState({

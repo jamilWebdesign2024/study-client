@@ -8,15 +8,15 @@
   default: true;
 
   /* Vibrant Education Theme */
-  --color-primary: #0D9488;         /* Teal green (fresh, positive) */
-  --color-secondary: #3B82F6;       /* Strong blue for trust */
-  --color-accent: #F59E0B;          /* Golden amber for energy */
-  --color-neutral: #374151;         /* Dark gray for readable text */
-  --color-base-100: #F9FAFB;        /* Very light background */
-  --color-info: #0EA5E9;            /* Sky blue for info elements */
-  --color-success: #10B981;         /* Green for success/active */
-  --color-warning: #F97316;         /* Orange */
-  --color-error: #EF4444;           /* Red */
+  --color-primary: #0D9488;         
+  --color-secondary: #3B82F6;       
+  --color-accent: #F59E0B;          
+  --color-neutral: #374151;        
+  --color-base-100: #F9FAFB;        
+  --color-info: #0EA5E9;            
+  --color-success: #10B981;        
+  --color-warning: #F97316;         
+  --color-error: #EF4444;           
 }
 
 
@@ -24,7 +24,7 @@ body{
    font-family: "inter", "Anek Bangla", sans-serif;
 }
 
-/* Card Styles */
+
 .study-card {
   @apply bg-[var(--color-base-100)] rounded-xl shadow-md overflow-hidden;
   @apply border border-[var(--color-neutral)]/10;
@@ -76,7 +76,7 @@ body{
   @apply flex items-center justify-center gap-2;
 }
 
-/* Text contrast adjustments */
+
 .text-neutral {
   @apply text-[var(--color-neutral)];
 }
