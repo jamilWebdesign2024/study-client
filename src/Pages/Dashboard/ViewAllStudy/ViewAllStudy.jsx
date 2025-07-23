@@ -17,6 +17,7 @@ import {
 import { MdPendingActions, MdOutlineDateRange } from 'react-icons/md';
 import { Dialog } from '@headlessui/react';
 import Loading from '../../../Components/Loading';
+import { Link } from 'react-router';
 
 const ViewAllStudy = () => {
   const { user } = useAuth();
@@ -150,9 +151,11 @@ const ViewAllStudy = () => {
                         <p className="text-sm text-gray-500 mb-4">
                           Get started by creating your first study session
                         </p>
-                        <button className="btn btn-primary btn-sm">
+                        <Link to="/dashboard/createStudySession">
+                            <button className="btn btn-primary btn-sm">
                           <FaPlusCircle className="mr-2" /> Create Session
                         </button>
+                        </Link>
                       </div>
                     </td>
                   </tr>

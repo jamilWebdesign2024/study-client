@@ -8,8 +8,8 @@ Welcome to **Study-Sphere**, a powerful and responsive educational platform buil
 📁 **Server Repo**: [Server GitHub](https://github.com/Programming-Hero-Web-Course4/b11a12-server-side-jamilWebdesign2024)
 
 🔐 **Admin Credentials:**
-- Email: `admin@studysphere.com`
-- Password: `admin123`
+- Email: `admin@gmail.com`
+
 
 ---
 

@@ -245,7 +245,7 @@ const ManagePersonalNotes = () => {
                         </div>
                     </div>
                     <Link
-                        to="/dashboard/create-note"
+                        to="/dashboard/createNote"
                         className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all shadow-md hover:shadow-indigo-200"
                     >
                         <FiPlus className="text-lg" />
@@ -280,7 +280,7 @@ const ManagePersonalNotes = () => {
                                 : 'Get started by creating your first note'}
                         </p>
                         <Link
-                            to="/dashboard/create-note"
+                            to="/dashboard/createNote"
                             className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all shadow-md"
                         >
                             <FiPlus />
