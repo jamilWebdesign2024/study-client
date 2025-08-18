@@ -30,8 +30,8 @@ const SocialLogin = () => {
 
                 try {
                     // ✅ Send to MongoDB
-                    const res = await axios.post("https://studys-phere-server.vercel.app/users", userInfo);
-                  } catch (error) {
+                    const res = await axios.post("http://localhost:3000/users", userInfo);
+                } catch (error) {
                     console.error("Error saving to DB", error);
                 }
 

@@ -27,28 +27,28 @@ const SignUp = () => {
   } = useForm();
 
   // imagbb uploading
-const handleImageUpload = async (e) => {
-  const image = e.target.files[0];
-  
-  
+  const handleImageUpload = async (e) => {
+    const image = e.target.files[0];
 
-  const formData = new FormData();
-  formData.append("image", image);
 
-  const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
 
-  try {
-    const res = await axios.post(imageUploadUrl, formData);
-    const imageUrl = res.data.data.url;
-    setProfilePic(imageUrl);
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_upload_key}`;
+
+    try {
+      const res = await axios.post(imageUploadUrl, formData);
+      const imageUrl = res.data.data.url;
+      setProfilePic(imageUrl);
     } catch (error) {
-    console.error("Image upload failed", error);
-  }
-};
+      console.error("Image upload failed", error);
+    }
+  };
 
 
 
-// full form submit
+  // full form submit
   const onSubmit = async (data) => {
     if (data.password !== data.confirmPassword) {
       Swal.fire({
@@ -77,8 +77,8 @@ const handleImageUpload = async (e) => {
         last_log_in: new Date().toISOString()
       };
 
-      
-      await axios.post('https://studys-phere-server.vercel.app/users', userInfo);
+
+      await axios.post('http://localhost:3000/users', userInfo);
 
 
       Swal.fire({

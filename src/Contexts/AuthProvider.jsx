@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-     
+
 
 
     const createUser = (email, password) => {
@@ -32,11 +32,11 @@ const AuthProvider = ({ children }) => {
         return signInWithPopup(auth, googleProvider)
     }
 
-    
+
 
     // for logout user
     const signOutUser = () => {
-        axios.post("https://studys-phere-server.vercel.app/logout", {}, { withCredentials: true })
+        axios.post("http://localhost:3000/logout", {}, { withCredentials: true })
             .catch(err => console.log("Logout error", err));
         return signOut(auth);
     };
@@ -51,7 +51,7 @@ const AuthProvider = ({ children }) => {
             //JWT related
             if (currentUser?.email) {
                 const userData = { email: currentUser.email };
-                axios.post('https://studys-phere-server.vercel.app/jwt', userData, {
+                axios.post('http://localhost:3000/jwt', userData, {
                     withCredentials: true
                 })
                     .then(res => {

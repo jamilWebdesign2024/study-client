@@ -1,86 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-/* index.css */
-@import "tailwindcss";
-@plugin "daisyui";
 
+@import "tailwindcss";
+
+
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
+
+
+html,
+body {
+  height: 100%;
+  font-family: "inter", "Anek Bangla", sans-serif;
+}
+
+html {
+  transition: background-color .25s ease, color .25s ease;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+/* ---------- Light Theme ---------- */
 @plugin "daisyui/theme" {
   name: "light";
   default: true;
 
-  /* Vibrant Education Theme */
-  --color-primary: #0D9488;         
-  --color-secondary: #3B82F6;       
-  --color-accent: #F59E0B;          
-  --color-neutral: #374151;        
-  --color-base-100: #F9FAFB;        
-  --color-info: #0EA5E9;            
-  --color-success: #10B981;        
-  --color-warning: #F97316;         
-  --color-error: #EF4444;           
+  /* শুধু ৩টি কালার টোকেন */
+  --color-primary: #6366f1;
+  --color-secondary: #3b82f6;
+  --color-accent: #06b6d4;
 }
 
+/* ---------- Dark Theme ---------- */
+@plugin "daisyui/theme" {
+  name: "dark";
 
-body{
-   font-family: "inter", "Anek Bangla", sans-serif;
+
+  --color-primary: #8b5cf6;
+  --color-secondary: #0ea5e9;
+  --color-accent: #22d3ee;
 }
-
-
-.study-card {
-  @apply bg-[var(--color-base-100)] rounded-xl shadow-md overflow-hidden;
-  @apply border border-[var(--color-neutral)]/10;
-  @apply transition-all duration-300 hover:shadow-lg;
-  @apply flex flex-col h-full;
-}
-
-.card-header {
-  @apply bg-gradient-to-r from-primary/20 to-secondary/20;
-  @apply px-6 py-4 border-b border-[var(--color-neutral)]/10;
-}
-
-.card-body {
-  @apply p-6 flex-grow;
-}
-
-.card-footer {
-  @apply px-6 py-4 bg-[var(--color-neutral)]/5;
-  @apply border-t border-[var(--color-neutral)]/10;
-}
-
-.session-status {
-  @apply text-xs font-semibold px-3 py-1 rounded-full;
-}
-
-.session-status.ongoing {
-  @apply bg-[var(--color-success)] text-white;
-}
-
-.session-status.closed {
-  @apply bg-[var(--color-error)] text-white;
-}
-
-.session-status.upcoming {
-  @apply bg-[var(--color-warning)] text-white;
-}
-
-.session-meta {
-  @apply flex items-center gap-2 text-sm text-[var(--color-neutral)];
-}
-
-.session-meta-icon {
-  @apply text-[var(--color-secondary)];
-}
-
-.btn-card {
-  @apply w-full btn btn-sm bg-[var(--color-secondary)] text-white rounded-lg;
-  @apply transition-all hover:scale-[1.02] hover:bg-[var(--color-primary)];
-  @apply flex items-center justify-center gap-2;
-}
-
-
-.text-neutral {
-  @apply text-[var(--color-neutral)];
-}
-
-
-
-
