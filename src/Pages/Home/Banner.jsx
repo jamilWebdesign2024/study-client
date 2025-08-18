@@ -36,7 +36,7 @@ const Banner = () => {
     ];
 
     return (
-        <div className="w-full h-screen max-h-[800px] relative">
+        <div className="w-full h-screen max-h-[800px] relative -mb-12">
             <Swiper
                 loop={true}
                 autoplay={{

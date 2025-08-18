@@ -89,10 +89,12 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="bg-base-100 border-b border-base-300 sticky top-0 z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          {/* Logo */}
+    <nav className="bg-base-100 border-b border-base-300 sticky top-0 z-50 shadow-sm w-full">
+      {/* Container full width but with padding */}
+      <div className="w-full px-4 sm:px-6 lg:px-12">
+        <div className="flex justify-between items-center h-16">
+          
+          {/* Left - Logo */}
           <Link
             to="/"
             className="text-2xl font-bold flex items-center"
@@ -103,19 +105,19 @@ const Navbar = () => {
           </Link>
 
           {/* Center Links */}
-          <div className="hidden md:flex mx-4 flex-1 justify-center">
-            <ul className="flex">{navItems}</ul>
+          <div className="hidden md:flex flex-1 justify-center">
+            <ul className="flex gap-2">{navItems}</ul>
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <ThemeToggle />
 
             {!user ? (
               <div className="hidden md:flex items-center gap-3">
                 <NavLink
                   to="/login"
-                  className="px-4 py-2 text-base-content hover:text-primary transition-colors font-medium"
+                  className="px-4 btn btn-outline rounded-xl py-2 text-base-content hover:bg-secondary/5 hover:text-primary transition-colors font-medium"
                 >
                   Login
                 </NavLink>
@@ -198,7 +200,7 @@ const Navbar = () => {
             )}
 
             {/* Mobile Menu Button */}
-            <div className="md:hidden ml-4">
+            <div className="md:hidden ml-2">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="inline-flex items-center justify-center p-2 rounded-lg text-base-content hover:bg-base-200 transition-all"
@@ -222,7 +224,7 @@ const Navbar = () => {
               <div className="pt-2 border-t border-base-300">
                 <NavLink
                   to="/login"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-base-content hover:bg-base-200"
+                  className="block px-4 btn-outline py-3 rounded-lg text-base font-medium text-base-content hover:bg-base-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Login
