@@ -7,14 +7,16 @@ import WhyChooseUs from './FAQ';
 import JoinCommunity from './FAQ';
 import WhyChooseUsSection from './WhyChooseUsSection';
 import FAQ from './FAQ';
-import RecentSessions from './RecentSessions';
+import UpcomingSessions from './UpcomingSessions';
+import Testimonials from './Testiomonials';
 
 const Home = () => {
     return (
         <div>
             <Banner></Banner>
             <AvailableStudySessions></AvailableStudySessions>
-            <RecentSessions></RecentSessions>
+            <UpcomingSessions></UpcomingSessions>
+            <Testimonials></Testimonials>
             <WhyChooseUsSection></WhyChooseUsSection>
             <FAQ></FAQ>
         </div>
