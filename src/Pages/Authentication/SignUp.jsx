@@ -67,7 +67,7 @@ const SignUp = () => {
         last_log_in: new Date().toISOString(),
       };
 
-      await axios.post("http://localhost:3000/users", userInfo);
+      await axios.post("https://studys-phere-server.vercel.app/users", userInfo);
 
       Swal.fire({
         icon: "success",
