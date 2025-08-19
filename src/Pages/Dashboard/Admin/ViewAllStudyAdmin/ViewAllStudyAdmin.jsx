@@ -6,15 +6,14 @@ import { Dialog } from '@headlessui/react';
 import { motion } from 'framer-motion';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
 import Loading from '../../../../Components/Loading';
+import Swal from 'sweetalert2';
 
 const ViewAllStudyAdmin = () => {
   const axiosSecure = useAxiosSecure();
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  // Modal & form state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -33,7 +32,6 @@ const ViewAllStudyAdmin = () => {
     registrationFee: 0,
   });
 
-  // Fetch sessions with pagination
   const { data = {}, refetch, isLoading } = useQuery({
     queryKey: ['all-study-sessions', currentPage, itemsPerPage],
     queryFn: async () => {
@@ -149,32 +147,44 @@ const ViewAllStudyAdmin = () => {
   };
 
   const handleDelete = async (id) => {
-    try {
-      const res = await axiosSecure.delete(`/sessions/${id}`);
-      if (res.data.deletedCount > 0) {
-        toast.success('Session deleted!');
-        refetch();
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to delete this session?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6', // DaisyUI theme primary color এর সাথে মেলানো যায়
+      cancelButtonColor: '#d33',     // DaisyUI theme error color
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosSecure.delete(`/sessions/${id}`);
+        if (res.data.deletedCount > 0) {
+          toast.success('Session deleted!');
+          refetch();
+        }
+      } catch (err) {
+        toast.error('Failed to delete session');
+        console.error(err);
       }
-    } catch (err) {
-      toast.error('Failed to delete session');
-      console.error(err);
     }
   };
 
   return (
     <motion.div
-      className="max-w-7xl mx-auto px-4 py-10"
+      className="w-full bg-base-300 mx-auto px-4 py-10"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <h2 className="text-3xl font-bold text-purple-600 text-center mb-2">
+      <h2 className="text-3xl font-bold text-primary text-center mb-2">
         All Study Sessions (Admin View)
       </h2>
-      <p className="text-center text-gray-600 mb-6">
+      <p className="text-center text-base-content/70 mb-6">
         Approve or reject pending sessions. Update/delete approved ones.
       </p>
 
-      {/* Items per page selector */}
       <div className="mb-4 flex items-center justify-end gap-2">
         <label htmlFor="itemsPerPage" className="font-medium">
           Items per page:
@@ -194,12 +204,11 @@ const ViewAllStudyAdmin = () => {
 
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full border rounded-lg shadow-md">
-          <thead className="bg-purple-100 text-gray-800">
+          <thead className="bg-accent/10 text-base-content">
             <tr>
               <th>#</th>
               <th>Title</th>
               <th>Tutor</th>
-              <th>Dates</th>
               <th>Status</th>
               <th>Reg. Fee</th>
               <th>Actions</th>
@@ -213,26 +222,17 @@ const ViewAllStudyAdmin = () => {
                 <td>
                   <div>
                     <div className="font-medium">{session.tutorName}</div>
-                    <div className="text-sm text-gray-500">{session.tutorEmail}</div>
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    Reg: {session.registrationStartDate} → {session.registrationEndDate}
-                  </div>
-                  <div>
-                    Class: {session.classStartDate} → {session.classEndDate}
+                    <div className="text-sm text-base-content/60">{session.tutorEmail}</div>
                   </div>
                 </td>
                 <td>
                   <span
-                    className={`px-3 py-1 rounded-full text-white text-sm ${
-                      session.status === 'pending'
-                        ? 'bg-yellow-500'
-                        : session.status === 'approved'
-                        ? 'bg-green-500'
-                        : 'bg-gray-500'
-                    }`}
+                    className={`px-3 py-1 rounded-full text-white text-sm ${session.status === 'pending'
+                      ? 'badge badge-warning'
+                      : session.status === 'approved'
+                        ? 'badge badge-success'
+                        : 'badge badge-neutral'
+                      }`}
                   >
                     {session.status === 'pending' && session.isResubmitted
                       ? 'New Request Pending'
@@ -284,7 +284,6 @@ const ViewAllStudyAdmin = () => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex justify-center mt-6 gap-2">
         <button
           className="btn btn-sm"
@@ -315,10 +314,9 @@ const ViewAllStudyAdmin = () => {
 
       {/* Approval Modal */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="fixed z-50">
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center px-4">
-          <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4">
+          <Dialog.Panel className="bg-base-100 p-6 rounded-xl max-w-md w-full">
             <Dialog.Title className="text-lg font-bold mb-4">Approve Session</Dialog.Title>
-
             <div className="space-y-4">
               <div>
                 <label className="block mb-1 font-medium">Is the session free or paid?</label>
@@ -331,7 +329,6 @@ const ViewAllStudyAdmin = () => {
                   <option value="paid">Paid</option>
                 </select>
               </div>
-
               {feeType === 'paid' && (
                 <div>
                   <label className="block mb-1 font-medium">Enter Amount (৳)</label>
@@ -344,7 +341,6 @@ const ViewAllStudyAdmin = () => {
                 </div>
               )}
             </div>
-
             <div className="mt-6 flex justify-end gap-3">
               <button className="btn btn-outline" onClick={() => setIsModalOpen(false)}>
                 Cancel
@@ -359,10 +355,9 @@ const ViewAllStudyAdmin = () => {
 
       {/* Rejection Modal */}
       <Dialog open={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} className="fixed z-50">
-        <div className="fixed inset-0 bg-black/80 bg-opacity-30 flex items-center justify-center px-4">
-          <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4">
+          <Dialog.Panel className="bg-base-100 p-6 rounded-xl max-w-md w-full">
             <Dialog.Title className="text-lg font-bold mb-4">Reject Session</Dialog.Title>
-
             <div className="space-y-4">
               <div>
                 <label className="block mb-1 font-medium">Rejection Reason *</label>
@@ -379,7 +374,6 @@ const ViewAllStudyAdmin = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-
               <div>
                 <label className="block mb-1 font-medium">Feedback for Tutor</label>
                 <textarea
@@ -391,7 +385,6 @@ const ViewAllStudyAdmin = () => {
                 />
               </div>
             </div>
-
             <div className="mt-6 flex justify-end gap-3">
               <button className="btn btn-outline" onClick={() => setIsRejectModalOpen(false)}>
                 Cancel
@@ -410,10 +403,9 @@ const ViewAllStudyAdmin = () => {
 
       {/* Update Modal */}
       <Dialog open={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)} className="fixed z-50">
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center px-4">
-          <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4">
+          <Dialog.Panel className="bg-base-100 p-6 rounded-xl max-w-md w-full">
             <Dialog.Title className="text-lg font-bold mb-4">Update Session</Dialog.Title>
-
             <div className="space-y-4">
               <div>
                 <label className="block mb-1 font-medium">Session Title</label>
@@ -425,7 +417,6 @@ const ViewAllStudyAdmin = () => {
                   className="input input-bordered w-full"
                 />
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1 font-medium">Registration Start</label>
@@ -448,7 +439,6 @@ const ViewAllStudyAdmin = () => {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1 font-medium">Class Start</label>
@@ -471,7 +461,6 @@ const ViewAllStudyAdmin = () => {
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block mb-1 font-medium">Registration Fee (৳)</label>
                 <input
@@ -483,7 +472,6 @@ const ViewAllStudyAdmin = () => {
                 />
               </div>
             </div>
-
             <div className="mt-6 flex justify-end gap-3">
               <button className="btn btn-outline" onClick={() => setIsUpdateModalOpen(false)}>
                 Cancel
@@ -500,4 +488,3 @@ const ViewAllStudyAdmin = () => {
 };
 
 export default ViewAllStudyAdmin;
-

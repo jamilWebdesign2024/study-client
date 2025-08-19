@@ -28,7 +28,7 @@ const ViewAllUsers = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchUsers();
-    }, 500); 
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -50,30 +50,47 @@ const ViewAllUsers = () => {
     }
   };
 
-  // 🔖 Role badge styling
+  // DaisyUI badge classes for roles
   const getRoleBadge = (role) => {
     switch (role) {
       case 'admin':
-        return 'bg-purple-100 text-purple-800 border border-purple-200';
+        return 'badge badge-primary';
       case 'tutor':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
+        return 'badge badge-info';
       case 'student':
-        return 'bg-green-100 text-green-800 border border-green-200';
+        return 'badge badge-success';
       default:
-        return 'bg-gray-100 text-gray-800 border border-gray-200';
+        return 'badge badge-ghost';
+    }
+  };
+
+  // DaisyUI button classes for actions
+  const getRoleButton = (role, action) => {
+    const baseClass = 'btn btn-sm';
+    switch (action) {
+      case 'makeAdmin':
+        return `${baseClass} btn-primary`;
+      case 'removeAdmin':
+        return `${baseClass} btn-error`;
+      case 'makeTutor':
+        return `${baseClass} btn-info`;
+      case 'removeTutor':
+        return `${baseClass} btn-warning`;
+      default:
+        return baseClass;
     }
   };
 
   return (
     <motion.div
-      className="p-6 max-w-7xl mx-auto"
+      className="p-6 w-full mx-auto "
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <div className="text-center mb-8">
         <h2 className="text-4xl font-bold text-primary">User Management</h2>
-        <p className="text-gray-500 mt-2">
+        <p className="text-base-content mt-2">
           Search and manage user roles with ease. Use buttons to promote or demote users.
         </p>
       </div>
@@ -88,17 +105,15 @@ const ViewAllUsers = () => {
           disabled={isLoading}
         />
         <FaSearch className="absolute left-3 top-3.5 text-gray-400" />
-        {isLoading && (
-          <FaSpinner className="absolute right-3 top-3.5 text-gray-400 animate-spin" />
-        )}
+        {isLoading && <FaSpinner className="absolute right-3 top-3.5 text-gray-400 animate-spin" />}
       </div>
 
       {isLoading ? (
-        <Loading></Loading>
+        <Loading />
       ) : (
-        <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-100">
+        <div className="overflow-x-auto rounded-lg shadow-lg border border-base-300 w-full bg-base-300">
           <table className="table w-full text-center">
-            <thead className="bg-primary text-white text-base">
+            <thead className="bg-primary text-primary-content text-base">
               <tr>
                 <th>#</th>
                 <th>Name</th>
@@ -118,18 +133,16 @@ const ViewAllUsers = () => {
                 users.map((user, index) => (
                   <motion.tr
                     key={user._id}
-                    className="hover:bg-gray-50 transition duration-200"
+                    className="hover:bg-base-200 transition duration-200"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.05 }}
                   >
                     <td className="font-semibold">{index + 1}</td>
                     <td className="font-medium">{user.name}</td>
-                    <td className="text-gray-600">{user.email}</td>
+                    <td className="text-gray-600 break-all">{user.email}</td>
                     <td>
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadge(user.role)}`}
-                      >
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadge(user.role)}`}>
                         {user.role.toUpperCase()}
                       </span>
                     </td>
@@ -137,7 +150,7 @@ const ViewAllUsers = () => {
                       {user.role !== 'admin' ? (
                         <button
                           onClick={() => handleRoleChange(user._id, 'admin')}
-                          className="btn btn-sm bg-purple-600 hover:bg-purple-700 text-white"
+                          className={getRoleButton(user.role, 'makeAdmin')}
                           disabled={isUpdating && updateId === user._id}
                         >
                           {isUpdating && updateId === user._id ? (
@@ -150,7 +163,7 @@ const ViewAllUsers = () => {
                       ) : (
                         <button
                           onClick={() => handleRoleChange(user._id, 'student')}
-                          className="btn btn-sm bg-red-600 hover:bg-red-700 text-white"
+                          className={getRoleButton(user.role, 'removeAdmin')}
                           disabled={isUpdating && updateId === user._id}
                         >
                           {isUpdating && updateId === user._id ? (
@@ -164,7 +177,7 @@ const ViewAllUsers = () => {
                       {user.role !== 'tutor' ? (
                         <button
                           onClick={() => handleRoleChange(user._id, 'tutor')}
-                          className="btn btn-sm bg-blue-600 hover:bg-blue-700 text-white"
+                          className={getRoleButton(user.role, 'makeTutor')}
                           disabled={isUpdating && updateId === user._id}
                         >
                           {isUpdating && updateId === user._id ? (
@@ -177,7 +190,7 @@ const ViewAllUsers = () => {
                       ) : (
                         <button
                           onClick={() => handleRoleChange(user._id, 'student')}
-                          className="btn btn-sm bg-yellow-500 hover:bg-yellow-600 text-white"
+                          className={getRoleButton(user.role, 'removeTutor')}
                           disabled={isUpdating && updateId === user._id}
                         >
                           {isUpdating && updateId === user._id ? (
