@@ -37,12 +37,12 @@ const FAQ = () => {
   };
 
   return (
-    <section className="py-16 px-4 text-black w-11/12 mx-auto">
+    <section className="py-16 px-4 w-full mx-auto bg-base-300">
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[var(--color-primary)]">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary">
           Frequently Asked Questions
         </h2>
-        <p className="mb-10 text-gray-600">
+        <p className="mb-10 text-base-content/70">
           Below are some of the most common questions asked by StudySphere users.
         </p>
 
@@ -54,7 +54,7 @@ const FAQ = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="border border-gray-300 rounded-lg p-5 cursor-pointer bg-white shadow-sm"
+              className="border border-base-300 rounded-lg p-5 cursor-pointer bg-accent/3 shadow-md hover:shadow-lg transition-shadow"
               onClick={() => toggleFAQ(index)}
             >
               <div className="flex justify-between items-center">
@@ -68,7 +68,7 @@ const FAQ = () => {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   transition={{ duration: 0.3 }}
-                  className="mt-3 text-gray-700"
+                  className="mt-3 text-base-content/80"
                 >
                   {faq.answer}
                 </motion.p>

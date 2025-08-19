@@ -9,7 +9,7 @@ const testimonials = [
         id: 1,
         name: "Ethila",
         role: "Frontend Student",
-        review: "The React course was amazing! The tutor explained everything so clearly that I finally understood hooks and components.",
+        review: "The React course was amazing! The tutor explained everything so clearly that I finally understood hooks.",
         image: "https://i.postimg.cc/xjFPLwmp/SMSSLL.png",
         rating: 5,
         course: "Advanced React Course"
@@ -82,7 +82,7 @@ const Testimonials = () => {
 
 
     return (
-        <section className="py-16 bg-base-300">
+        <section className="py-16 bg-base-300 lg:px-16">
             <div className="container mx-auto px-4">
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -112,31 +112,32 @@ const Testimonials = () => {
                         <SwiperSlide key={t.id}>
                             <motion.div
                                 whileHover={{ y: -5 }}
-                                className="card bg-accent/3 rounded-2xl shadow-sm hover:shadow-md border border-gray-10 h-full mt-3 transition-all"
+                                className="h-full flex"
                             >
-                                <div className="card-body p-8">
-                                    <div className="mb-6 flex justify-center">
-                                        {renderStars(t.rating)}
-                                    </div>
+                                <div className="card flex-1 bg-accent/3 rounded-2xl shadow-sm hover:shadow-md border border-base-200 flex flex-col transition-all">
+                                    <div className="card-body p-8 flex flex-col h-full">
+                                        <div className="mb-6 flex justify-center">{renderStars(t.rating)}</div>
 
-                                    <blockquote className="text-center italic text-base-content/90 mb-8 relative">
-                                        <span className="absolute -top-4 left-0 text-5xl text-primary opacity-10">“</span>
-                                        {t.review}
-                                        <span className="absolute -bottom-4 right-0 text-5xl text-primary opacity-10">”</span>
-                                    </blockquote>
+                                        <blockquote className="text-center italic text-base-content/90 mb-8 flex-1 relative">
+                                            <span className="absolute -top-4 left-0 text-5xl text-primary opacity-10">“</span>
+                                            {t.review}
+                                            <span className="absolute -bottom-4 right-0 text-5xl text-primary opacity-10">”</span>
+                                        </blockquote>
 
-                                    <div className="flex flex-col items-center mt-auto">
-                                        <div className="avatar mb-3">
-                                            <div className="w-16 rounded-full ring-2 ring-primary ring-offset-base-100 ring-offset-2">
-                                                <img src={t.image} alt={t.name} />
+                                        <div className="flex flex-col items-center mt-auto">
+                                            <div className="avatar mb-3">
+                                                <div className="w-16 rounded-full ring-2 ring-primary ring-offset-base-100 ring-offset-2">
+                                                    <img src={t.image} alt={t.name} />
+                                                </div>
                                             </div>
+                                            <h3 className="text-lg font-semibold">{t.name}</h3>
+                                            <p className="text-sm text-base-content/70">{t.role}</p>
                                         </div>
-                                        <h3 className="text-lg font-semibold">{t.name}</h3>
-                                        <p className="text-sm text-base-content/70">{t.role}</p>
                                     </div>
                                 </div>
                             </motion.div>
                         </SwiperSlide>
+
                     ))}
                 </Swiper>
             </div>

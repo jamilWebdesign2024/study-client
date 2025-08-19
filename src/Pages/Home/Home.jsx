@@ -9,6 +9,7 @@ import WhyChooseUsSection from './WhyChooseUsSection';
 import FAQ from './FAQ';
 import UpcomingSessions from './UpcomingSessions';
 import Testimonials from './Testiomonials';
+import Newsletter from './NewsLetter';
 
 const Home = () => {
     return (
@@ -19,6 +20,7 @@ const Home = () => {
             <Testimonials></Testimonials>
             <WhyChooseUsSection></WhyChooseUsSection>
             <FAQ></FAQ>
+            <Newsletter></Newsletter>
         </div>
     );
 };
