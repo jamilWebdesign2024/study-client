@@ -71,11 +71,7 @@ const ViewBookedSession = () => {
                 </thead>
                 <tbody>
                   {bookedSessions.map((session, idx) => (
-                    <motion.tr
-                      key={idx}
-                      whileHover={{ scale: 1.01 }}
-                      transition={{ duration: 0.2 }}
-                    >
+                    <tr key={idx} className="hover">
                       {/* Session */}
                       <td>
                         <div className="flex items-center gap-3">
@@ -126,13 +122,12 @@ const ViewBookedSession = () => {
                       {/* Status */}
                       <td>
                         <div
-                          className={`badge ${
-                            session.status === "booked"
+                          className={`badge ${session.status === "booked"
                               ? "badge-success"
                               : session.status === "completed"
-                              ? "badge-info"
-                              : "badge-warning"
-                          }`}
+                                ? "badge-info"
+                                : "badge-warning"
+                            }`}
                         >
                           {session.status.charAt(0).toUpperCase() +
                             session.status.slice(1)}
@@ -152,7 +147,7 @@ const ViewBookedSession = () => {
                           View <FaArrowRight className="ml-1" />
                         </motion.button>
                       </td>
-                    </motion.tr>
+                    </tr>
                   ))}
                 </tbody>
               </table>

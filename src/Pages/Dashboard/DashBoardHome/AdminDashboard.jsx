@@ -48,7 +48,7 @@ const AdminDashboard = () => {
         setLoading(true)
         const res = await axiosSecure.get("/dashboard/admin-overview");
 
-       
+
         setStats({
           totalUsers: res.data.totalUsers || 0,
           totalTutors: res.data.totalTutors || 0,
@@ -70,12 +70,12 @@ const AdminDashboard = () => {
 
     fetchStats();
   }, [axiosSecure]);
-  if(loading)return <Loading></Loading>
+  if (loading) return <Loading></Loading>
 
   // Prepare chart data with fallback to avoid empty charts
   const sessionLabels = Object.keys(tutorSessions);
   const sessionValues = Object.values(tutorSessions);
- 
+
   const pieData = {
     labels: sessionLabels.length ? sessionLabels : ["No Data"],
     datasets: [

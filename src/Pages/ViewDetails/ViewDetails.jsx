@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { FaStar, FaCalendarAlt, FaUserGraduate, FaClock, FaMoneyBillWave } from 'react-icons/fa';
+import { FaStar, FaCalendarAlt, FaUserGraduate, FaClock, FaMoneyBillWave, FaCheckCircle } from 'react-icons/fa';
 import { IoMdTime } from 'react-icons/io';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -86,14 +86,12 @@ const ViewDetails = () => {
     };
 
     if (parseInt(session.registrationFee) === 0) {
-      
       try {
         const res = await axiosSecure.post('/bookedSessions', bookedSessionData);
         if (res.status === 201) {
           toast.success('Successfully enrolled in the session!');
-           navigate('/dashboard/viewBookedSession')
+          navigate('/dashboard/viewBookedSession')
         }
-        
       } catch (err) {
         toast.error(err.response?.data?.message || 'Failed to enroll');
       }
@@ -133,37 +131,37 @@ const ViewDetails = () => {
     return <Loading></Loading>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-base-200 p-4 md:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Session Card */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-          <div className="bg-indigo-600 h-48 flex items-center justify-center">
-            <h1 className="text-4xl font-bold text-white text-center px-4">{session.sessionTitle}</h1>
+        <div className="card bg-base-100 shadow-xl mb-8">
+          <div className="bg-primary text-primary-content p-8 flex items-center justify-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-center">{session.sessionTitle}</h1>
           </div>
 
-          <div className="p-8">
+          <div className="card-body">
             {/* Tutor Info & Rating */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-              <div className="flex items-center mb-4 sm:mb-0">
-                <div className="bg-indigo-100 p-3 rounded-full mr-4">
-                  <FaUserGraduate className="text-indigo-600 text-xl" />
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+              <div className="flex items-center mb-4 md:mb-0">
+                <div className="bg-primary/20 p-3 rounded-full mr-4">
+                  <FaUserGraduate className="text-primary text-xl" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-800">{session.tutorName}</h3>
-                  <p className="text-gray-500 text-sm">{session.tutorEmail}</p>
+                  <h3 className="text-lg font-semibold">{session.tutorName}</h3>
+                  <p className="text-base-content/70 text-sm">{session.tutorEmail}</p>
                 </div>
               </div>
               {averageRating !== null && (
-                <div className="flex items-center bg-yellow-50 px-4 py-2 rounded-full">
+                <div className="flex items-center bg-warning/20 px-4 py-2 rounded-full">
                   <div className="flex mr-2">
                     {[...Array(5)].map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-lg ${i < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                        className={`text-lg ${i < Math.floor(averageRating) ? 'text-warning' : 'text-base-content/30'}`}
                       />
                     ))}
                   </div>
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium">
                     {averageRating.toFixed(1)} ({reviews.length} reviews)
                   </span>
                 </div>
@@ -172,27 +170,25 @@ const ViewDetails = () => {
 
             {/* Description */}
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">About This Session</h3>
-              <p className="text-gray-600 leading-relaxed">{session.description}</p>
+              <h3 className="text-xl font-semibold mb-3">About This Session</h3>
+              <p className="text-base-content/80 leading-relaxed">{session.description}</p>
             </div>
 
             {/* Session Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
-                    <FaCalendarAlt className="text-indigo-600" />
+                  <div className="bg-primary/20 p-2 rounded-lg mr-4">
+                    <FaCalendarAlt className="text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-700">Registration Period</h4>
-                    <p className="text-gray-500 text-sm">
+                    <h4 className="font-medium">Registration Period</h4>
+                    <p className="text-base-content/70 text-sm">
                       {dayjs(session.registrationStartDate).format('MMM D, YYYY')} -{' '}
                       {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
                     </p>
                     <span
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        isRegistrationOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}
+                      className={`badge mt-1 ${isRegistrationOpen ? 'badge-success' : 'badge-error'}`}
                     >
                       {isRegistrationOpen ? 'Open for registration' : 'Registration closed'}
                     </span>
@@ -200,12 +196,12 @@ const ViewDetails = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
-                    <IoMdTime className="text-indigo-600 text-lg" />
+                  <div className="bg-primary/20 p-2 rounded-lg mr-4">
+                    <IoMdTime className="text-primary text-lg" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-700">Class Schedule</h4>
-                    <p className="text-gray-500 text-sm">
+                    <h4 className="font-medium">Class Schedule</h4>
+                    <p className="text-base-content/70 text-sm">
                       {dayjs(session.classStartDate).format('MMM D, YYYY')} -{' '}
                       {dayjs(session.classEndDate).format('MMM D, YYYY')}
                     </p>
@@ -215,22 +211,22 @@ const ViewDetails = () => {
 
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
-                    <FaClock className="text-indigo-600" />
+                  <div className="bg-primary/20 p-2 rounded-lg mr-4">
+                    <FaClock className="text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-700">Duration</h4>
-                    <p className="text-gray-500 text-sm">{session.sessionDuration} weeks</p>
+                    <h4 className="font-medium">Duration</h4>
+                    <p className="text-base-content/70 text-sm">{session.sessionDuration} weeks</p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-indigo-100 p-2 rounded-lg mr-4">
-                    <FaMoneyBillWave className="text-indigo-600" />
+                  <div className="bg-primary/20 p-2 rounded-lg mr-4">
+                    <FaMoneyBillWave className="text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-700">Fee</h4>
-                    <p className="text-gray-500 text-sm">
+                    <h4 className="font-medium">Fee</h4>
+                    <p className="text-base-content/70 text-sm">
                       {session.registrationFee === 0 ? 'Free' : `${session.registrationFee}৳`}
                     </p>
                   </div>
@@ -242,36 +238,38 @@ const ViewDetails = () => {
             <button
               disabled={disableBooking}
               onClick={handleEnroll}
-              className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
-                disableBooking
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'
-              }`}
+              className={`btn btn-lg w-full ${disableBooking ? 'btn-disabled' : 'btn-primary'}`}
             >
-              {hasAlreadyBooked ? 'Already Enrolled' : isRegistrationOpen ? 'Enroll Now' : 'Registration Closed'}
+              {hasAlreadyBooked ? (
+                <>
+                  <FaCheckCircle className="mr-2" /> Already Enrolled
+                </>
+              ) : isRegistrationOpen ? (
+                'Enroll Now'
+              ) : (
+                'Registration Closed'
+              )}
             </button>
           </div>
         </div>
 
         {/* Review Section */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="p-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Student Reviews</h2>
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title text-2xl mb-6">Student Reviews</h2>
 
             {/* Review form for enrolled student */}
             {user && role === 'student' && (
-              <div className="bg-indigo-50 p-6 rounded-lg mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Share Your Experience</h3>
+              <div className="bg-base-200 p-6 rounded-box mb-8">
+                <h3 className="text-lg font-semibold mb-4">Share Your Experience</h3>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
+                  <label className="block text-sm font-medium mb-2">Your Rating</label>
                   <div className="flex space-x-2">
                     {[1, 2, 3, 4, 5].map((val) => (
                       <button
                         key={val}
                         onClick={() => setRating(val)}
-                        className={`text-2xl transition-colors ${
-                          val <= rating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-400'
-                        }`}
+                        className={`text-2xl transition-colors ${val <= rating ? 'text-warning' : 'text-base-content/30 hover:text-warning'}`}
                       >
                         <FaStar />
                       </button>
@@ -281,7 +279,7 @@ const ViewDetails = () => {
                 <div className="mb-4">
                   <textarea
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="textarea textarea-bordered w-full"
                     placeholder="Write your review here..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
@@ -290,11 +288,7 @@ const ViewDetails = () => {
                 <button
                   onClick={handlePostReview}
                   disabled={!comment || !rating}
-                  className={`px-6 py-2 rounded-lg font-medium ${
-                    !comment || !rating
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  }`}
+                  className={`btn ${!comment || !rating ? 'btn-disabled' : 'btn-primary'}`}
                 >
                   Submit Review
                 </button>
@@ -304,27 +298,27 @@ const ViewDetails = () => {
             {/* Reviews List */}
             {reviews.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">No reviews yet for this session.</p>
+                <p className="text-base-content/70">No reviews yet for this session.</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {reviews.map((r, i) => (
-                  <div key={i} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                  <div key={i} className="border-b border-base-300 pb-6 last:border-0 last:pb-0">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-800">{r.studentName}</h4>
-                        <p className="text-sm text-gray-500">{r.studentEmail}</p>
+                        <h4 className="font-semibold">{r.studentName}</h4>
+                        <p className="text-base-content/70 text-sm">{r.studentEmail}</p>
                       </div>
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <FaStar
                             key={i}
-                            className={`text-sm ${i < r.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                            className={`text-sm ${i < r.rating ? 'text-warning' : 'text-base-content/30'}`}
                           />
                         ))}
                       </div>
                     </div>
-                    <p className="text-gray-600 mt-2">"{r.comment}"</p>
+                    <p className="text-base-content/80 mt-2">"{r.comment}"</p>
                   </div>
                 ))}
               </div>
@@ -337,8 +331,3 @@ const ViewDetails = () => {
 };
 
 export default ViewDetails;
-
-
-
-
-

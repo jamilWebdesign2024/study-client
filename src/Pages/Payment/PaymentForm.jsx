@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { toast } from 'react-toastify';
-import { FaLock, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
+import { FaLock, FaCreditCard, FaArrowLeft } from 'react-icons/fa';
 import { MdError } from 'react-icons/md';
 import Loading from '../../Components/Loading';
 
@@ -23,19 +23,21 @@ const PaymentForm = () => {
 
     if (!sessionData) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                <div className="text-center p-8 max-w-md bg-white rounded-xl shadow-md">
-                    <MdError className="mx-auto text-5xl text-red-500 mb-4" />
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Session Data Missing</h2>
-                    <p className="text-gray-600 mb-6">
-                        No session data found. Please go back and try again.
-                    </p>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-                    >
-                        Go Back
-                    </button>
+            <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+                <div className="card bg-base-100 shadow-xl max-w-md w-full">
+                    <div className="card-body text-center">
+                        <MdError className="mx-auto text-5xl text-error mb-4" />
+                        <h2 className="card-title justify-center text-2xl">Session Data Missing</h2>
+                        <p className="text-base-content/70 mb-6">
+                            No session data found. Please go back and try again.
+                        </p>
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="btn btn-primary"
+                        >
+                            Go Back
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -108,7 +110,7 @@ const PaymentForm = () => {
                             title: 'Payment Successful!',
                             html: `
                                 <div class="text-left space-y-2">
-                                    <p class="font-semibold">Session: ${sessionData.campName}</p>
+                                    <p class="font-semibold">Session: ${sessionData.sessionTitle}</p>
                                     <p><strong>Amount:</strong> ৳${amount}</p>
                                     <p><strong>Transaction ID:</strong> ${transactionId}</p>
                                     <p class="pt-2">Your payment has been successfully processed.</p>
@@ -118,7 +120,7 @@ const PaymentForm = () => {
                             confirmButtonColor: '#22c55e',
                             allowOutsideClick: false,
                             customClass: {
-                                popup: 'rounded-xl'
+                                popup: 'rounded-box'
                             }
                         }).then(result => {
                             if (result.isConfirmed) {
@@ -147,105 +149,106 @@ const PaymentForm = () => {
         style: {
             base: {
                 fontSize: '16px',
-                color: '#424770',
+                color: 'var(--fallback-bc,oklch(var(--bc)/1))',
                 '::placeholder': {
-                    color: '#aab7c4',
+                    color: 'oklch(var(--bc)/0.4)',
                 },
+                backgroundColor: 'oklch(var(--b1)/1)',
             },
             invalid: {
-                color: '#9e2146',
+                color: 'oklch(var(--er)/1)',
             },
         },
         hidePostalCode: true
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-base-200 p-4 md:p-8">
             <div className="max-w-md mx-auto">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Payment</h1>
-                    <p className="text-gray-600">Secure payment processed by Stripe</p>
+                    <h1 className="text-3xl font-bold mb-2">Complete Your Payment</h1>
+                    <p className="text-base-content/70">Secure payment processed by Stripe</p>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div className="card bg-base-100 shadow-xl">
                     {/* Order Summary */}
-                    <div className="bg-indigo-50 p-6 border-b">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
+                    <div className="bg-primary/10 p-6">
+                        <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
                         <div className="space-y-3">
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Camp Name:</span>
-                                <span className="font-medium">{sessionData.campName}</span>
+                                <span className="text-base-content/70">Session:</span>
+                                <span className="font-medium">{sessionData.sessionTitle}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Date & Time:</span>
-                                <span className="font-medium">
-                                    {new Date(sessionData.date).toLocaleDateString()} at {sessionData.time}
-                                </span>
+                                <span className="text-base-content/70">Tutor:</span>
+                                <span className="font-medium">{sessionData.tutorName}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Venue:</span>
-                                <span className="font-medium">{sessionData.venue}</span>
+                                <span className="text-base-content/70">Duration:</span>
+                                <span className="font-medium">{sessionData.sessionDuration} weeks</span>
                             </div>
-                            <div className="flex justify-between pt-3 border-t">
-                                <span className="text-gray-600">Total Amount:</span>
-                                <span className="text-xl font-bold text-indigo-600">৳{amount}</span>
+                            <div className="flex justify-between pt-3 border-t border-base-300">
+                                <span className="text-base-content/70">Total Amount:</span>
+                                <span className="text-xl font-bold text-primary">৳{amount}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Payment Form */}
-                    <form onSubmit={handleSubmit} className="p-6">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <FaCreditCard className="mr-2 text-indigo-500" />
+                    <form onSubmit={handleSubmit} className="card-body">
+                        <h2 className="card-title mb-4">
+                            <FaCreditCard className="text-primary" />
                             Payment Details
                         </h2>
 
-                        <div className="mb-6">
-                            <div className="border rounded-lg p-3 hover:border-indigo-400 transition">
+                        <div className="form-control mb-4">
+                            <div className="border border-base-300 rounded-box p-3 hover:border-primary transition">
                                 <CardElement options={cardElementOptions} />
                             </div>
                             {error && (
-                                <div className="mt-2 text-red-500 text-sm flex items-center">
+                                <div className="mt-2 text-error text-sm flex items-center">
                                     <MdError className="mr-1" /> {error}
                                 </div>
                             )}
                         </div>
 
-                        <div className="flex items-center mb-6 text-sm text-gray-500">
-                            <FaLock className="mr-2 text-indigo-500" />
+                        <div className="flex items-center mb-6 text-sm text-base-content/70">
+                            <FaLock className="mr-2 text-primary" />
                             Your payment is secured with 256-bit encryption
                         </div>
 
                         <button
                             type="submit"
                             disabled={!stripe || loading}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition flex items-center justify-center ${
-                                !stripe || loading
-                                    ? 'bg-gray-400 cursor-not-allowed'
-                                    : 'bg-indigo-600 hover:bg-indigo-700'
-                            }`}
+                            className="btn btn-primary btn-lg w-full"
                         >
                             {loading ? (
                                 <>
-                                    <Loading></Loading>
+                                    <span className="loading loading-spinner"></span>
                                     Processing...
                                 </>
                             ) : (
-                                <>
-                                    Pay ৳{amount}
-                                </>
+                                <>Pay ৳{amount}</>
                             )}
                         </button>
                     </form>
 
                     {/* Payment Methods */}
-                    <div className="bg-gray-50 p-6 border-t">
-                        <h3 className="text-sm font-medium text-gray-500 mb-3">We accept</h3>
-                        <div className="flex space-x-4">
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" alt="Visa" className="h-8" />
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg" alt="Mastercard" className="h-8" />
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple Pay" className="h-8" />
-                            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google Pay" className="h-8" />
+                    <div className="bg-base-200 p-6">
+                        <h3 className="text-sm font-medium text-base-content/70 mb-3">We accept</h3>
+                        <div className="flex flex-wrap gap-4">
+                            <div className="bg-base-100 p-2 rounded-box">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg" alt="Visa" className="h-6" />
+                            </div>
+                            <div className="bg-base-100 p-2 rounded-box">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mastercard/mastercard-original.svg" alt="Mastercard" className="h-6" />
+                            </div>
+                            <div className="bg-base-100 p-2 rounded-box">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/apple/apple-original.svg" alt="Apple Pay" className="h-6" />
+                            </div>
+                            <div className="bg-base-100 p-2 rounded-box">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google Pay" className="h-6" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -253,9 +256,10 @@ const PaymentForm = () => {
                 {/* Back button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="mt-6 text-indigo-600 hover:text-indigo-800 font-medium flex items-center justify-center w-full"
+                    className="btn btn-ghost mt-6 w-full"
                 >
-                    ← Back to previous page
+                    <FaArrowLeft className="mr-2" />
+                    Back to previous page
                 </button>
             </div>
         </div>

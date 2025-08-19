@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaChalkboardTeacher, FaCalendarAlt, FaRegClock } from 'react-icons/fa';
+import { FaChalkboardTeacher } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import useAuth from '../../../hooks/useAuth';
 import Loading from '../../../Components/Loading';
- 
 
 const CreateStudySession = () => {
   const { user } = useAuth();
@@ -17,11 +16,11 @@ const CreateStudySession = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
   const onSubmit = async (data) => {
-    setLoading(true); // Start loading
+    setLoading(true);
     const sessionData = {
       ...data,
       tutorName: user?.displayName,
@@ -31,36 +30,32 @@ const CreateStudySession = () => {
       createdAt: new Date().toISOString(),
     };
 
-    
-
     try {
       const res = await axiosSecure.post('/sessions', sessionData);
       if (res.data.insertedId) {
         toast.success('Study session created successfully!');
-        // reset();
+        reset();
       }
     } catch (err) {
       console.error(err);
       toast.error('Failed to create session');
-    }finally {
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
-   // Show loading if true
-  if (loading) {
-    return <Loading />;
-  }
-
+  if (loading) return <Loading />;
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto p-6 bg-primary/20 shadow-2xl rounded-xl mt-10"
+      className="w-full mx-auto p-6 shadow-xl rounded-xl bg-base-300 mt-10"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <h2 className="text-3xl font-extrabold text-center text-secondary mb-2">Create Study Session</h2>
-      <p className="text-center text-black mb-6">
+      <h2 className="text-3xl font-extrabold text-center text-primary mb-2">
+        Create Study Session
+      </h2>
+      <p className="text-center mb-6 text-base-content">
         Fill out the form below to schedule a new study session.
       </p>
 
@@ -74,7 +69,9 @@ const CreateStudySession = () => {
             placeholder="Enter session title"
             className="input input-bordered w-full"
           />
-          {errors.sessionTitle && <span className="text-red-500">Session title is required</span>}
+          {errors.sessionTitle && (
+            <span className="text-error">Session title is required</span>
+          )}
         </div>
 
         {/* Tutor Name */}
@@ -84,7 +81,7 @@ const CreateStudySession = () => {
             type="text"
             value={user?.displayName || ''}
             readOnly
-            className="input input-bordered w-full bg-gray-100 cursor-not-allowed"
+            className="input input-bordered w-full input-disabled"
           />
         </div>
 
@@ -95,7 +92,7 @@ const CreateStudySession = () => {
             type="email"
             value={user?.email || ''}
             readOnly
-            className="input input-bordered w-full bg-gray-100 cursor-not-allowed"
+            className="input input-bordered w-full input-disabled"
           />
         </div>
 
@@ -108,7 +105,9 @@ const CreateStudySession = () => {
             className="textarea textarea-bordered w-full"
             rows="4"
           ></textarea>
-          {errors.description && <span className="text-red-500">Description is required</span>}
+          {errors.description && (
+            <span className="text-error">Description is required</span>
+          )}
         </div>
 
         {/* Dates */}
@@ -157,29 +156,29 @@ const CreateStudySession = () => {
             className="input input-bordered w-full"
           />
           {errors.sessionDuration && (
-            <span className="text-red-500">Valid duration is required</span>
+            <span className="text-error">Valid duration is required</span>
           )}
         </div>
 
-        {/* Registration Fee - readonly */}
+        {/* Registration Fee */}
         <div>
           <label className="block mb-1 font-medium">Registration Fee</label>
           <input
             type="number"
             value={0}
             readOnly
-            className="input input-bordered w-full bg-gray-100 cursor-not-allowed"
+            className="input input-bordered w-full input-disabled"
           />
         </div>
 
-        {/* Status - default */}
+        {/* Status */}
         <div>
           <label className="block mb-1 font-medium">Status</label>
           <input
             type="text"
             value="pending"
             readOnly
-            className="input input-bordered w-full bg-gray-100 cursor-not-allowed"
+            className="input input-bordered w-full input-disabled"
           />
         </div>
 
@@ -187,7 +186,7 @@ const CreateStudySession = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="btn btn-primary px-10 mt-4 flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'"
+            className="btn btn-primary px-10 mt-4 flex items-center gap-2"
           >
             <FaChalkboardTeacher /> Create Session
           </button>

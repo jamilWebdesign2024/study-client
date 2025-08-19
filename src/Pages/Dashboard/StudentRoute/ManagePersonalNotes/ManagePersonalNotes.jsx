@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { 
-  FiEdit, 
-  FiTrash2, 
-  FiPlus, 
-  FiSearch, 
-  FiFileText, 
-  FiLoader, 
-  FiX,
-  FiClock,
-  FiCalendar,
-  FiBookmark,
-  FiEye,
-  FiFilter,
-  FiMoreVertical
+import {
+    FiEdit,
+    FiTrash2,
+    FiPlus,
+    FiSearch,
+    FiFileText,
+    FiLoader,
+    FiX,
+    FiClock,
+    FiCalendar,
+    FiBookmark,
+    FiEye,
+    FiFilter,
+    FiMoreVertical
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
@@ -41,7 +41,7 @@ const ManagePersonalNotes = () => {
         queryKey: ['notes', user?.email],
         queryFn: async () => {
             const res = await axiosSecure.get(`/notes?email=${user.email}`);
-            return res.data.data || res.data; 
+            return res.data.data || res.data;
         },
         enabled: !!user?.email,
     });
@@ -131,12 +131,12 @@ const ManagePersonalNotes = () => {
             toast.error('Title and description are required');
             return;
         }
-        updateNoteMutation.mutate({ 
-            id: currentNote._id, 
+        updateNoteMutation.mutate({
+            id: currentNote._id,
             data: {
                 title: updateData.title,
                 description: updateData.description
-            } 
+            }
         });
     };
 
@@ -152,7 +152,7 @@ const ManagePersonalNotes = () => {
     }
 
     return (
-        <div className="min-h-screen bg-base-100">
+        <div className="min-h-screen bg-base-300 w-full">
             {/* Update Note Modal */}
             <dialog className={`modal ${isModalOpen ? 'modal-open' : ''}`}>
                 <div className="modal-box w-11/12 max-w-2xl">
@@ -170,7 +170,7 @@ const ManagePersonalNotes = () => {
                             <FiX size={18} />
                         </button>
                     </div>
-                    
+
                     <form onSubmit={handleUpdateSubmit} className="space-y-6">
                         <div className="form-control">
                             <label className="label">
@@ -180,11 +180,11 @@ const ManagePersonalNotes = () => {
                                 type="text"
                                 className="input input-bordered w-full focus:input-primary"
                                 value={updateData.title}
-                                onChange={(e) => setUpdateData({...updateData, title: e.target.value})}
+                                onChange={(e) => setUpdateData({ ...updateData, title: e.target.value })}
                                 required
                             />
                         </div>
-                        
+
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text font-semibold text-base-content">Description</span>
@@ -193,11 +193,11 @@ const ManagePersonalNotes = () => {
                                 rows={8}
                                 className="textarea textarea-bordered resize-none focus:textarea-primary"
                                 value={updateData.description}
-                                onChange={(e) => setUpdateData({...updateData, description: e.target.value})}
+                                onChange={(e) => setUpdateData({ ...updateData, description: e.target.value })}
                                 required
                             />
                         </div>
-                        
+
                         <div className="flex justify-end gap-3 pt-4">
                             <button
                                 type="button"
@@ -295,16 +295,16 @@ const ManagePersonalNotes = () => {
                                 />
                             </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                             <div className="btn-group">
-                                <button 
+                                <button
                                     className={`btn btn-sm ${viewMode === 'grid' ? 'btn-active' : 'btn-outline'}`}
                                     onClick={() => setViewMode('grid')}
                                 >
                                     Grid
                                 </button>
-                                <button 
+                                <button
                                     className={`btn btn-sm ${viewMode === 'list' ? 'btn-active' : 'btn-outline'}`}
                                     onClick={() => setViewMode('list')}
                                 >
@@ -330,7 +330,7 @@ const ManagePersonalNotes = () => {
                                 {searchTerm ? 'No notes found' : 'Your note collection is empty'}
                             </h2>
                             <p className="text-base-content/70 max-w-md mb-8">
-                                {searchTerm 
+                                {searchTerm
                                     ? 'Try adjusting your search terms or create a new note to get started.'
                                     : 'Start building your knowledge base by creating your first note. Capture ideas, insights, and important information.'}
                             </p>
@@ -373,7 +373,7 @@ const ManagePersonalNotes = () => {
                                                             </button>
                                                         </li>
                                                         <li>
-                                                            <button 
+                                                            <button
                                                                 onClick={() => handleDelete(note._id)}
                                                                 className="text-error hover:bg-error/10"
                                                             >
@@ -384,15 +384,15 @@ const ManagePersonalNotes = () => {
                                                     </ul>
                                                 </div>
                                             </div>
-                                            
+
                                             <h2 className="card-title text-lg mb-3 line-clamp-2">
                                                 {note.title}
                                             </h2>
-                                            
+
                                             <p className="text-base-content/70 text-sm line-clamp-4 mb-4">
                                                 {note.description}
                                             </p>
-                                            
+
                                             <div className="flex items-center justify-between text-xs text-base-content/60 pt-4 border-t border-base-300">
                                                 <div className="flex items-center gap-1">
                                                     <FiCalendar />
@@ -434,13 +434,13 @@ const ManagePersonalNotes = () => {
                                                 <p className="text-base-content/70 line-clamp-2">{note.description}</p>
                                             </div>
                                             <div className="flex items-center gap-2 ml-4">
-                                                <button 
+                                                <button
                                                     onClick={() => openUpdateModal(note)}
                                                     className="btn btn-sm btn-outline btn-primary"
                                                 >
                                                     <FiEdit />
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => handleDelete(note._id)}
                                                     className="btn btn-sm btn-outline btn-error"
                                                 >

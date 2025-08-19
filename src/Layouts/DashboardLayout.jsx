@@ -214,7 +214,7 @@ const DashboardLayout = () => {
             <li className="mt-4 border-t border-base-300 pt-3">
                 <button
                     onClick={() => navigate('/')}
-                    className="flex items-center gap-3 p-3 rounded-lg transition-all hover:bg-base-200 w-full text-left"
+                    className="flex items-center gap-3 p-3 rounded-lg transition-all  bg-accent/10 hover:shadow-lg w-full text-left"
                 >
                     <FaArrowLeft className="text-lg" /> Back to Home
                 </button>
@@ -254,7 +254,7 @@ const DashboardLayout = () => {
                     </div>
 
                     {/* User profile */}
-                    <div className="text-center mb-6 px-2 py-4 bg-base-200 rounded-xl">
+                    <div className="text-center mb-6 px-2 py-4 bg-accent/5 rounded-xl">
                         <img
                             src={user?.photoURL || "https://i.ibb.co/6c8kdLyH/phoooot.jpg"}
                             alt="Profile"

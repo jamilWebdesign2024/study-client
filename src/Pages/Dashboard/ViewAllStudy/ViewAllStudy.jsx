@@ -12,7 +12,8 @@ import {
   FaTimesCircle,
   FaBook,
   FaPlusCircle,
-  FaChalkboardTeacher
+  FaChalkboardTeacher,
+  FaInfoCircle
 } from 'react-icons/fa';
 import { MdPendingActions, MdOutlineDateRange } from 'react-icons/md';
 import { Dialog } from '@headlessui/react';
@@ -52,35 +53,35 @@ const ViewAllStudy = () => {
   };
 
   const statusIcons = {
-    pending: <MdPendingActions className="text-amber-500" size={16} />,
-    approved: <FaCheckCircle className="text-emerald-500" size={16} />,
-    rejected: <FaTimesCircle className="text-rose-500" size={16} />,
+    pending: <MdPendingActions className="text-warning" size={16} />,
+    approved: <FaCheckCircle className="text-success" size={16} />,
+    rejected: <FaTimesCircle className="text-error" size={16} />,
   };
 
   const getStatusBadge = (status, session) => {
-    const baseClasses = "px-3 py-1 rounded-lg text-xs font-medium flex items-center gap-2";
+    const baseClasses = "badge gap-2 font-semibold";
 
     switch (status) {
       case 'pending':
-        return <span className={`${baseClasses} bg-amber-50 text-amber-800`}>
+        return <span className={`${baseClasses} badge-warning`}>
           {statusIcons.pending}
-          {session.isResubmitted ? 'New Request Pending' : 'Pending'}
+          {session.isResubmitted ? 'Resubmitted' : 'Pending Review'}
         </span>;
       case 'approved':
-        return <span className={`${baseClasses} bg-emerald-50 text-emerald-800`}>
+        return <span className={`${baseClasses} badge-success`}>
           {statusIcons.approved} Approved
         </span>;
       case 'rejected':
         return (
           <button
             onClick={() => handleViewRejection(session)}
-            className={`${baseClasses} bg-rose-50 text-rose-800 hover:bg-rose-100 transition-colors`}
+            className={`${baseClasses} badge-error hover:opacity-90 transition-opacity`}
           >
-            {statusIcons.rejected} Rejected
+            {statusIcons.rejected} View Details
           </button>
         );
       default:
-        return <span className={`${baseClasses} bg-gray-100 text-gray-800`}>
+        return <span className={`${baseClasses} badge-neutral`}>
           {status}
         </span>;
     }
@@ -91,97 +92,132 @@ const ViewAllStudy = () => {
     setIsViewRejectionModalOpen(true);
   };
 
-  return (
-    <motion.div
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold text-secondary mb-2 flex items-center justify-center gap-3">
-          <FaChalkboardTeacher className="text-indigo-600 dark:text-indigo-400" />
-          My Study Sessions
-        </h2>
-        <p className="text-primary max-w-2xl mx-auto">
-          Manage all your created study sessions. You can resubmit rejected sessions for approval.
-        </p>
-      </div>
+  if (isLoading) {
+    return <Loading />;
+  }
 
-      {isLoading ? (
-        <Loading></Loading>
-      ) : (
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-base-200">
-          <div className="overflow-x-auto">
-            <table className="table table-zebra">
-              <thead className="bg-base-200 text-base-content">
-                <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>
-                    <div className="flex items-center gap-2">
-                      <MdOutlineDateRange /> Registration
-                    </div>
-                  </th>
-                  <th>
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt /> Class Dates
-                    </div>
-                  </th>
-                  <th>
-                    <div className="flex items-center gap-2">
-                      <FaClock /> Duration
-                    </div>
-                  </th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sessions.length === 0 ? (
-                  <tr>
-                    <td colSpan="7" className="px-6 py-8 text-center">
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="p-4 bg-indigo-100 rounded-full mb-4">
-                          <FaBook className="text-3xl text-indigo-500" />
-                        </div>
-                        <h3 className="text-lg font-medium text-gray-800 mb-1">
-                          No study sessions found
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-4">
-                          Get started by creating your first study session
-                        </p>
-                        <Link to="/dashboard/createStudySession">
-                            <button className="btn btn-primary btn-sm">
-                          <FaPlusCircle className="mr-2" /> Create Session
-                        </button>
-                        </Link>
+  return (
+    <div className="min-h-screen bg-base-200 p-4 md:p-8">
+      <motion.div
+        className="max-w-7xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Header Section */}
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center justify-center p-3 bg-primary/20 rounded-full mb-4">
+            <FaChalkboardTeacher className="text-4xl text-primary" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">My Study Sessions</h1>
+          <p className="text-base-content/70 max-w-2xl mx-auto">
+            Manage all your created study sessions. Track their status and resubmit rejected sessions for approval.
+          </p>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="stat bg-base-100 rounded-box shadow">
+            <div className="stat-figure text-primary">
+              <FaChalkboardTeacher className="text-3xl" />
+            </div>
+            <div className="stat-title">Total Sessions</div>
+            <div className="stat-value">{sessions.length}</div>
+          </div>
+
+          <div className="stat bg-base-100 rounded-box shadow">
+            <div className="stat-figure text-success">
+              <FaCheckCircle className="text-3xl" />
+            </div>
+            <div className="stat-title">Approved</div>
+            <div className="stat-value">
+              {sessions.filter(s => s.status === 'approved').length}
+            </div>
+          </div>
+
+          <div className="stat bg-base-100 rounded-box shadow">
+            <div className="stat-figure text-warning">
+              <MdPendingActions className="text-3xl" />
+            </div>
+            <div className="stat-title">Pending</div>
+            <div className="stat-value">
+              {sessions.filter(s => s.status === 'pending').length}
+            </div>
+          </div>
+        </div>
+
+        {/* Sessions Table */}
+        <div className="bg-base-100 rounded-box shadow-xl overflow-hidden">
+          {sessions.length === 0 ? (
+            <div className="px-6 py-16 text-center">
+              <div className="flex flex-col items-center justify-center">
+                <div className="p-4 bg-primary/20 rounded-full mb-4">
+                  <FaBook className="text-3xl text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No study sessions found</h3>
+                <p className="text-base-content/70 mb-6 max-w-md">
+                  Get started by creating your first study session to share your knowledge with students.
+                </p>
+                <Link to="/dashboard/createStudySession">
+                  <button className="btn btn-primary">
+                    <FaPlusCircle className="mr-2" /> Create Your First Session
+                  </button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead>
+                  <tr className="bg-accent/20 text-base-content">
+                    <th className="text-base-content/70">Session</th>
+                    <th className="text-base-content/70">
+                      <div className="flex items-center gap-2">
+                        <MdOutlineDateRange /> Registration
                       </div>
-                    </td>
+                    </th>
+                    <th className="text-base-content/70">
+                      <div className="flex items-center gap-2">
+                        <FaCalendarAlt /> Class Dates
+                      </div>
+                    </th>
+                    <th className="text-base-content/70">
+                      <div className="flex items-center gap-2">
+                        <FaClock /> Duration
+                      </div>
+                    </th>
+                    <th className="text-base-content/70">Status</th>
+                    <th className="text-base-content/70">Actions</th>
                   </tr>
-                ) : (
-                  sessions.map((session, index) => (
+                </thead>
+                <tbody>
+                  {sessions.map((session, index) => (
                     <tr key={session._id} className="hover">
-                      <td>{index + 1}</td>
-                      <td>{session.sessionTitle}</td>
+                      <td>
+                        <div className="flex flex-col">
+                          <div className="font-bold">{session.sessionTitle}</div>
+                          <div className="text-sm text-base-content/70 line-clamp-1">
+                            {session.description}
+                          </div>
+                        </div>
+                      </td>
                       <td>
                         <div className="flex flex-col text-sm">
                           <span className="font-medium">{session.registrationStartDate}</span>
-                          <span className="text-xs text-gray-400">to</span>
+                          <span className="text-xs text-base-content/50">to</span>
                           <span>{session.registrationEndDate}</span>
                         </div>
                       </td>
                       <td>
                         <div className="flex flex-col text-sm">
                           <span className="font-medium">{session.classStartDate}</span>
-                          <span className="text-xs text-gray-400">to</span>
+                          <span className="text-xs text-base-content/50">to</span>
                           <span>{session.classEndDate}</span>
                         </div>
                       </td>
-                      <td className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-sm">
-                          <span className="font-medium">{session.sessionDuration}</span>
-                          <span className="text-xs">weeks</span>
+                      <td>
+                        <div className="flex items-center justify-center gap-1 text-sm font-medium">
+                          {session.sessionDuration} weeks
                         </div>
                       </td>
                       <td>
@@ -191,61 +227,68 @@ const ViewAllStudy = () => {
                         {session.status === 'rejected' ? (
                           <button
                             onClick={() => handleReapply(session._id)}
-                            className="btn btn-warning btn-xs"
+                            className="btn btn-warning btn-sm"
+                            title="Resubmit for approval"
                           >
-                            <FaRedo className="mr-1.5" size={12} /> Resubmit
+                            <FaRedo className="mr-1" /> Resubmit
                           </button>
                         ) : (
-                          <span className="text-xs text-gray-400 italic">No actions</span>
+                          <div className="text-xs text-base-content/50 italic">No actions available</div>
                         )}
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-      )}
 
-      {/* View Rejection Modal */}
-      <Dialog open={isViewRejectionModalOpen} onClose={() => setIsViewRejectionModalOpen(false)} className="fixed z-50">
-        <div className="fixed inset-0 bg-black/80 bg-opacity-30 flex items-center justify-center px-4">
-          <Dialog.Panel className="bg-white p-6 rounded-xl max-w-md w-full">
-            <Dialog.Title className="text-lg font-bold mb-4 flex items-center gap-2 text-rose-600">
-              <FaTimesCircle /> Session Rejected
+        {/* View Rejection Modal */}
+        <Dialog
+          open={isViewRejectionModalOpen}
+          onClose={() => setIsViewRejectionModalOpen(false)}
+          className="modal modal-open"
+        >
+          <div className="modal-box">
+            <Dialog.Title className="flex items-center gap-2 text-error font-bold text-lg mb-4">
+              <FaInfoCircle /> Session Rejection Details
             </Dialog.Title>
 
             {selectedRejectedSession && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium text-slate-800 mb-1">Session Title:</h3>
-                  <p className="text-slate-600">{selectedRejectedSession.sessionTitle}</p>
+                  <h3 className="font-semibold mb-1">Session Title:</h3>
+                  <p className="text-base-content/80">{selectedRejectedSession.sessionTitle}</p>
                 </div>
 
                 <div>
-                  <h3 className="font-medium text-slate-800 mb-1">Rejection Reason:</h3>
-                  <p className="text-slate-600">{selectedRejectedSession.rejectionReason || "No reason provided"}</p>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-slate-800 mb-1">Admin Feedback:</h3>
-                  <p className="text-slate-600 whitespace-pre-line">
-                    {selectedRejectedSession.feedback || "No additional feedback provided"}
+                  <h3 className="font-semibold mb-1">Rejection Reason:</h3>
+                  <p className="text-base-content/80 bg-error/10 p-3 rounded-box">
+                    {selectedRejectedSession.rejectionReason || "No specific reason provided"}
                   </p>
                 </div>
+
+                {selectedRejectedSession.feedback && (
+                  <div>
+                    <h3 className="font-semibold mb-1">Admin Feedback:</h3>
+                    <p className="text-base-content/80 bg-warning/10 p-3 rounded-box whitespace-pre-line">
+                      {selectedRejectedSession.feedback}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="modal-action">
               <button
-                className="btn bg-red-700 text-white rounded-lg"
+                className="btn btn-ghost"
                 onClick={() => setIsViewRejectionModalOpen(false)}
               >
                 Close
               </button>
               <button
-                className="btn btn-primary bg-blue-700"
+                className="btn btn-primary"
                 onClick={() => {
                   handleReapply(selectedRejectedSession._id);
                   setIsViewRejectionModalOpen(false);
@@ -254,10 +297,10 @@ const ViewAllStudy = () => {
                 <FaRedo className="mr-2" /> Resubmit for Approval
               </button>
             </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
-    </motion.div>
+          </div>
+        </Dialog>
+      </motion.div>
+    </div>
   );
 };
 
