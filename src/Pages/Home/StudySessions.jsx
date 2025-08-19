@@ -73,7 +73,7 @@ const StudySessions = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="max-w-7xl mx-auto px-4 py-10 min-h-screen bg-base-300"
+      className="w-full mx-auto px-4 py-10 lg:px-10 min-h-screen bg-base-300"
     >
       <motion.div
         initial={{ y: -20, opacity: 0 }}

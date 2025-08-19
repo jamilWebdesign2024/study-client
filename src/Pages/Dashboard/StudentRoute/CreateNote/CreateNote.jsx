@@ -10,17 +10,17 @@ import {
   FiEdit2, 
   FiTrash2,
   FiSave,
-  FiLoader
+  FiLoader,
+  FiPlus
 } from 'react-icons/fi';
 import useAuth from '../../../../hooks/useAuth';
 import useAxiosSecure from '../../../../hooks/useAxiosSecure';
 import Loading from '../../../../Components/Loading';
 
-
 const CreateNote = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const [loading, setLoading] = useState(false); //loading
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -39,10 +39,7 @@ const CreateNote = () => {
     toast.success('Note created successfully!', {
       position: "top-right",
       autoClose: 3000,
-      theme: "colored",
-      style: {
-        background: '#4BB543',
-      }
+      theme: "colored"
     });
   };
 
@@ -51,8 +48,10 @@ const CreateNote = () => {
       title: 'Error!',
       text: message || 'Failed to create note',
       icon: 'error',
-      confirmButtonColor: '#4F46E5',
-      background: '#fff',
+      confirmButtonText: 'Try Again',
+      customClass: {
+        confirmButton: 'btn btn-error'
+      },
       showClass: {
         popup: 'animate__animated animate__headShake'
       }
@@ -86,62 +85,68 @@ const CreateNote = () => {
     }
   };
 
-  // Show loading screen during submission
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8"
-    >
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-base-300 w-full py-8 px-4">
+      <div className="max-w-4xl mx-auto">
         <motion.div
-          whileHover={{ scale: 1.005 }}
-          className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
         >
-          <div className="bg-indigo-600 px-6 py-4 flex items-center">
-            <FiBook className="text-white text-2xl mr-3" />
-            <h2 className="text-2xl font-bold text-white">Create New Note</h2>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary text-primary-content rounded-full mb-4">
+            <FiBook className="text-2xl" />
           </div>
+          <h1 className="text-4xl font-bold text-base-content mb-2">Create New Note</h1>
+          <p className="text-base-content/70 text-lg flex items-center justify-center">
+            <FiEdit2 className="mr-2" />
+            Organize your thoughts and learning materials
+          </p>
+        </motion.div>
 
-          <div className="p-6 sm:p-8">
-            <p className="text-gray-600 mb-6 flex items-center">
-              <FiEdit2 className="mr-2" />
-              Organize your thoughts and learning materials
-            </p>
-            
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          whileHover={{ scale: 1.002 }}
+          className="card bg-accent/3 shadow-xl"
+        >
+          <div className="card-body">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* email input */}
-              <div className="relative">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiMail className="mr-2" />
-                  Your Email
+              {/* Email Input */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold flex items-center">
+                    <FiMail className="mr-2" />
+                    Your Email
+                  </span>
                 </label>
                 <div className="relative">
                   <input
-                    id="email"
                     type="email"
                     readOnly
                     value={user?.email || ''}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
+                    className="input input-bordered w-full pl-10 bg-accent/1 cursor-not-allowed"
                   />
-                  <FiMail className="absolute left-3 top-3 text-gray-400" />
+                  <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
                 </div>
               </div>
 
-              {/* title input */}
-              <div className="relative">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiType className="mr-2" />
-                  Note Title <span className="text-red-500 ml-1">*</span>
+              {/* Title Input */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold flex items-center">
+                    <FiType className="mr-2" />
+                    Note Title
+                    <span className="text-error ml-1">*</span>
+                  </span>
                 </label>
                 <div className="relative">
                   <input
-                    id="title"
                     type="text"
                     {...register('title', { 
                       required: 'Title is required',
@@ -150,33 +155,37 @@ const CreateNote = () => {
                         message: 'Title must be at least 3 characters'
                       }
                     })}
-                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                      errors.title ? 'border-red-500' : 'border-gray-300'
+                    className={`input input-bordered bg-accent/1 w-full pl-10 ${
+                      errors.title ? 'input-error' : ''
                     }`}
                     placeholder="Enter note title"
                   />
-                  <FiType className="absolute left-3 top-3 text-gray-400" />
+                  <FiType className="absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
                 </div>
                 {errors.title && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-1 text-sm text-red-600 flex items-center"
-                  >
-                    <FiType className="mr-1" /> {errors.title.message}
-                  </motion.p>
+                  <label className="label">
+                    <motion.span 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="label-text-alt text-error flex items-center"
+                    >
+                      <FiType className="mr-1" /> {errors.title.message}
+                    </motion.span>
+                  </label>
                 )}
               </div>
 
-              {/* description input */}
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                  <FiEdit2 className="mr-2" />
-                  Description <span className="text-red-500 ml-1">*</span>
+              {/* Description Input */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold flex items-center">
+                    <FiEdit2 className="mr-2" />
+                    Description
+                    <span className="text-error ml-1">*</span>
+                  </span>
                 </label>
                 <div className="relative">
                   <textarea
-                    id="description"
                     rows={8}
                     {...register('description', { 
                       required: 'Description is required',
@@ -185,45 +194,46 @@ const CreateNote = () => {
                         message: 'Description must be at least 10 characters'
                       }
                     })}
-                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                      errors.description ? 'border-red-500' : 'border-gray-300'
+                    className={`textarea textarea-bordered w-full bg-accent/3 pl-10 resize-none ${
+                      errors.description ? 'textarea-error' : ''
                     }`}
                     placeholder="Write your note here..."
                   />
-                  <FiEdit2 className="absolute left-3 top-3 text-gray-400" />
+                  <FiEdit2 className="absolute left-3 top-4 text-base-content/50" />
                 </div>
                 {errors.description && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-1 text-sm text-red-600 flex items-center"
-                  >
-                    <FiEdit2 className="mr-1" /> {errors.description.message}
-                  </motion.p>
+                  <label className="label">
+                    <motion.span 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="label-text-alt text-error flex items-center"
+                    >
+                      <FiEdit2 className="mr-1" /> {errors.description.message}
+                    </motion.span>
+                  </label>
                 )}
               </div>
 
-              {/* action buttons */}
-              <div className="flex justify-end space-x-3 pt-4">
+              {/* Action Buttons */}
+              <div className="card-actions justify-end pt-6">
                 <motion.button
                   type="button"
                   onClick={() => reset()}
                   disabled={loading}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="btn btn-outline btn-neutral bg-error text-base-content"
                 >
                   <FiTrash2 className="mr-2" />
-                  Clear
+                  Clear Form
                 </motion.button>
+                
                 <motion.button
                   type="submit"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={loading}
-                  className={`flex items-center px-6 py-2 border border-transparent rounded-lg shadow-sm text-white font-medium ${
-                    loading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
-                  } transition-colors`}
+                  className={`btn btn-primary ${loading ? 'loading' : ''}`}
                 >
                   {loading ? (
                     <>
@@ -241,8 +251,31 @@ const CreateNote = () => {
             </form>
           </div>
         </motion.div>
+
+        {/* Additional Info Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-6"
+        >
+          <div className="alert alert-info bg-accent/20 text-base-content">
+            <div className="flex items-start">
+              <FiBook className="text-xl mr-3 mt-1" />
+              <div>
+                <h3 className="font-semibold mb-1">Tips for effective note-taking:</h3>
+                <ul className="text-sm opacity-80 space-y-1">
+                  <li>• Use clear, descriptive titles for easy searching</li>
+                  <li>• Break down complex topics into manageable sections</li>
+                  <li>• Include key concepts, examples, and personal insights</li>
+                  <li>• Review and update your notes regularly</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

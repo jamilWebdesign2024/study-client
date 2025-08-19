@@ -54,8 +54,8 @@ const Navbar = () => {
       text: "Do you really want to log out?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "hsl(var(--er))",
-      cancelButtonColor: "hsl(var(--in))",
+      confirmButtonColor: "bg-base-200 text-base-content",
+      cancelButtonColor: "bg-accent/10",
       confirmButtonText: "Yes, log me out!",
       cancelButtonText: "Cancel",
     });

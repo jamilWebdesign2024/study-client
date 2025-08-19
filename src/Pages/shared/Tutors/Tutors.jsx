@@ -27,7 +27,7 @@ const Tutors = () => {
 
   return (
     <motion.div
-      className="p-4 md:p-8 max-w-7xl mx-auto bg-base-300 min-h-screen"
+      className="p-4 md:p-8 w-full mx-auto bg-base-300 min-h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

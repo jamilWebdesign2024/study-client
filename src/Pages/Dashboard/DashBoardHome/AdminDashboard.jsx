@@ -26,7 +26,7 @@ ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Le
 
 const AdminDashboard = () => {
   const axiosSecure = useAxiosSecure();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -45,9 +45,10 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
         const res = await axiosSecure.get("/dashboard/admin-overview");
 
+       
         setStats({
           totalUsers: res.data.totalUsers || 0,
           totalTutors: res.data.totalTutors || 0,
@@ -61,29 +62,26 @@ const AdminDashboard = () => {
         });
 
         setTutorSessions(res.data.sessionBookingCount || {});
-        setLoading(false);
+        setLoading(false)
       } catch (err) {
         console.error("Admin dashboard fetch failed", err);
-        setLoading(false);
       }
     };
 
     fetchStats();
   }, [axiosSecure]);
+  if(loading)return <Loading></Loading>
 
-  if (loading) return <Loading />;
-
+  // Prepare chart data with fallback to avoid empty charts
   const sessionLabels = Object.keys(tutorSessions);
   const sessionValues = Object.values(tutorSessions);
-
+ 
   const pieData = {
     labels: sessionLabels.length ? sessionLabels : ["No Data"],
     datasets: [
       {
         data: sessionValues.length ? sessionValues : [1],
-        backgroundColor: ["primary", "secondary", "accent", "info", "warning"].map(
-          (color) => `var(--${color})`
-        ),
+        backgroundColor: ["#60a5fa", "#f87171", "#34d399", "#fbbf24", "#a78bfa"],
       },
     ],
   };
@@ -94,35 +92,59 @@ const AdminDashboard = () => {
       {
         label: "Bookings per Session",
         data: sessionValues.length ? sessionValues : [0],
-        backgroundColor: "var(--primary)",
+        backgroundColor: "#4f46e5",
       },
     ],
   };
 
-  const statsData = [
-    { icon: <FaUsers className="text-2xl" />, title: "Total Users", value: stats.totalUsers, color: "primary" },
-    { icon: <FaUserTie className="text-2xl" />, title: "Total Tutors", value: stats.totalTutors, color: "secondary" },
-    { icon: <FaClipboardList className="text-2xl" />, title: "Total Bookings", value: stats.totalBookings, color: "accent" },
-    { icon: <FaBookOpen className="text-2xl" />, title: "Total Sessions", value: stats.totalSessions, color: "info" },
-    { icon: <FaComments className="text-2xl" />, title: "Total Reviews", value: stats.totalReviews, color: "success" },
-    { icon: <FaChalkboardTeacher className="text-2xl" />, title: "Total Materials", value: stats.totalMaterials, color: "warning" },
-    { icon: <FaMoneyCheck className="text-2xl" />, title: "Total Revenue", value: `৳${stats.totalRevenue}`, color: "primary" },
-    { icon: <FaStar className="text-2xl" />, title: "Average Rating", value: stats.averageRating, color: "warning" },
-  ];
-
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      <h2 className="text-3xl font-bold text-center mb-10">Admin Dashboard Overview</h2>
+    <div className="w-full bg-base-300 mx-auto px-4 py-10">
+      <h2 className="text-3xl font-bold text-primary text-center mb-10">
+        Admin Dashboard Overview
+      </h2>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        {statsData.map((stat, idx) => (
-          <div key={idx} className="card bg-base-100 shadow p-4">
-            <div className={`text-${stat.color}`}>{stat.icon}</div>
-            <h4 className="font-bold text-lg">{stat.title}</h4>
-            <p className="text-3xl">{stat.value}</p>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="card bg-base-100 shadow p-4">
+          <FaUsers className="text-2xl text-primary" />
+          <h4 className="font-bold text-lg">Total Users</h4>
+          <p className="text-3xl">{stats.totalUsers}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaUserTie className="text-2xl text-secondary" />
+          <h4 className="font-bold text-lg">Total Tutors</h4>
+          <p className="text-3xl">{stats.totalTutors}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaClipboardList className="text-2xl text-accent" />
+          <h4 className="font-bold text-lg">Total Bookings</h4>
+          <p className="text-3xl">{stats.totalBookings}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaBookOpen className="text-2xl text-info" />
+          <h4 className="font-bold text-lg">Total Sessions</h4>
+          <p className="text-3xl">{stats.totalSessions}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaComments className="text-2xl text-success" />
+          <h4 className="font-bold text-lg">Total Reviews</h4>
+          <p className="text-3xl">{stats.totalReviews}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaChalkboardTeacher className="text-2xl text-warning" />
+          <h4 className="font-bold text-lg">Total Materials</h4>
+          <p className="text-3xl">{stats.totalMaterials}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaMoneyCheck className="text-2xl text-pink-600" />
+          <h4 className="font-bold text-lg">Total Revenue</h4>
+          <p className="text-3xl">৳{stats.totalRevenue}</p>
+        </div>
+        <div className="card bg-base-100 shadow p-4">
+          <FaStar className="text-2xl text-yellow-400" />
+          <h4 className="font-bold text-lg">Average Rating</h4>
+          <p className="text-3xl">{stats.averageRating}</p>
+        </div>
       </div>
 
       {/* Charts */}
