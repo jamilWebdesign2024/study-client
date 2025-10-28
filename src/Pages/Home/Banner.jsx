@@ -9,76 +9,72 @@ const Banner = () => {
     const slides = [
         {
             id: 1,
-            image: "https://i.postimg.cc/9M9JYwSB/book-bg-85aaf0c1dd945315.jpg",
-            heading: "Elevate Your Learning",
-            title: "Join Our Interactive Study Sessions",
-            buttonText: "Explore Courses",
-            buttonLink: "/courses",
+            image: "https://i.postimg.cc/HxYqvBmG/360-F-631479392-ZIDxz-FDUo-BYg8Vch-TRJ7Tj-QWlm-D0J920.jpg",
+            heading: "Empower Your Learning Journey",
+            title: "Achieve academic excellence with flexible and interactive online courses tailored for you.",
+            buttonText: "Browse Sessions",
+            buttonLink: "/all-study-sessions",
         },
         {
             id: 2,
-            image:
-                "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80",
-            heading: "Expert Tutors",
-            title: "Learn From Industry Professionals",
-            buttonText: "Find Tutors",
-            buttonLink: "/tutors",
+            image: "https://png.pngtree.com/background/20210709/original/pngtree-cartoon-education-training-cram-school-picture-image_917042.jpg",
+            heading: "Learn From Certified Instructors",
+            title: "Gain real-world skills and guidance from top educators and industry professionals.",
+            buttonText: "Browse Sessions",
+            buttonLink: "/all-study-sessions",
         },
         {
             id: 3,
-            image:
-                "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
-            heading: "Study Materials",
-            title: "Access Premium Learning Resources",
-            buttonText: "Browse Materials",
-            buttonLink: "/materials",
+            image: "https://i.postimg.cc/0N0gChTs/pngtree-cartoon-education-training-cram-school-picture-image-917042.png",
+            heading: "Upgrade Your Study Resources",
+            title: "Access premium materials and tools that boost confidence and strengthen knowledge.",
+            buttonText: "Browse Sessions",
+            buttonLink: "/all-study-sessions",
         },
     ];
 
     return (
-        <div className="w-full h-screen max-h-[800px] relative -mb-12">
+        <div className="w-full h-[90vh] md:h-screen relative overflow-hidden">
             <Swiper
                 loop={true}
-                autoplay={{
-                    delay: 5000,
-                    disableOnInteraction: false,
-                }}
-                pagination={{
-                    clickable: true,
-                    dynamicBullets: true,
-                }}
+                autoplay={{ delay: 4500, disableOnInteraction: false }}
+                pagination={{ clickable: true, dynamicBullets: true }}
                 modules={[Autoplay, Pagination]}
-                className="h-full w-full"
+                className="h-full"
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
                         <div className="relative w-full h-full">
-                            {/* Background Image with fixed ratio */}
-                            <div className="absolute inset-0 w-full h-full aspect-[16/9]">
-                                <img
-                                    src={slide.image}
-                                    alt={slide.title}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                />
-                                <div className="absolute inset-0 bg-black/50"></div>
-                            </div>
 
-                            {/* Content */}
-                            <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4 z-10">
-                                <h3 className="text-lg sm:text-xl md:text-2xl text-secondary mb-2 font-medium animate-fadeInUp">
+                            {/* ✅ Dimmed Image */}
+                            <img
+                                src={slide.image}
+                                alt={slide.title}
+                                className="w-full h-full object-cover brightness-75"
+                            />
+
+                            {/* ✅ Strong Overlay to protect text visibility */}
+                            <div className="absolute inset-0 bg-black/50 bg-opacity-60"></div>
+
+                            {/* ✅ Clean Text Area */}
+                            <div className="absolute inset-0 flex flex-col justify-center items-start px-6 md:px-20 gap-5 z-10 max-w-lg">
+
+                                <h2 className="jost text-3xl sm:text-4xl md:text-4xl font-bold text-white drop-shadow-lg">
                                     {slide.heading}
-                                </h3>
-                                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-content mb-6 animate-fadeInUp">
-                                    {slide.title}
                                 </h2>
+
+                                <p className="text-base text-gray-100/60 leading-relaxed drop-shadow font-normal jost">
+                                    {slide.title}
+                                </p>
+
                                 <Link
                                     to={slide.buttonLink}
-                                    className="btn btn-primary btn-wide animate-fadeInUp"
+                                    className="btn btn-primary rounded-full shadow-lg"
                                 >
                                     {slide.buttonText}
                                 </Link>
                             </div>
+
                         </div>
                     </SwiperSlide>
                 ))}

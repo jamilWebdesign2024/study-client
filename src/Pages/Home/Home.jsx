@@ -10,11 +10,13 @@ import FAQ from './FAQ';
 import UpcomingSessions from './UpcomingSessions';
 import Testimonials from './Testiomonials';
 import Newsletter from './NewsLetter';
+import Categories from './Categories';
 
 const Home = () => {
     return (
         <div>
             <Banner></Banner>
+            <Categories />
             <AvailableStudySessions></AvailableStudySessions>
             <UpcomingSessions></UpcomingSessions>
             <Testimonials></Testimonials>

@@ -57,7 +57,7 @@ const AvailableStudySessions = () => {
 
   return (
     <motion.div
-      className="w-full px-4 sm:px-6 lg:px-12 py-12 sm:py-16 lg:py-20 mt-8 sm:mt-12 bg-base-300"
+      className="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-base-300"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -79,14 +79,14 @@ const AvailableStudySessions = () => {
         </motion.p>
       </div>
 
-      {/* Cards Grid */}
+      {/* Cards Grid - 4 columns on large screens */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
         variants={containerVariants}
       >
         {sessions
           .filter((session) => session.status === 'approved')
-          .slice(0, 6)
+          .slice(0, 8) // Show 8 cards for 2 rows of 4
           .map((session, index) => {
             const status = getSessionStatus(
               session.registrationStartDate,
@@ -96,7 +96,7 @@ const AvailableStudySessions = () => {
             return (
               <motion.div
                 key={session._id}
-                className="card bg-accent/3 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-200 h-full flex flex-col relative overflow-hidden group"
+                className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-200 h-full flex flex-col relative overflow-hidden group"
                 variants={cardVariants}
                 whileHover={{
                   scale: 1.02,
@@ -108,10 +108,10 @@ const AvailableStudySessions = () => {
                 <div className="absolute top-3 right-3 z-10">
                   <motion.div
                     className={`badge text-xs font-semibold ${status === 'upcoming'
-                        ? 'badge-info'
-                        : status === 'ongoing'
-                          ? 'badge-success'
-                          : 'badge-error'
+                      ? 'badge-info'
+                      : status === 'ongoing'
+                        ? 'badge-success'
+                        : 'badge-error'
                       }`}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -122,10 +122,10 @@ const AvailableStudySessions = () => {
                 </div>
 
                 {/* Card Body */}
-                <div className="card-body flex-1 flex flex-col justify-between p-6">
+                <div className="card-body flex-1 flex flex-col justify-between p-4 sm:p-5">
                   <div className="flex-1">
                     <motion.h3
-                      className="card-title text-base sm:text-lg font-bold text-base-content mb-2 sm:mb-3 line-clamp-2"
+                      className="card-title text-base font-bold text-base-content mb-2 line-clamp-2 min-h-[2.5rem]"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.1 + 0.3 }}
@@ -134,7 +134,7 @@ const AvailableStudySessions = () => {
                     </motion.h3>
 
                     <motion.p
-                      className="text-sm text-base-content/70 mb-3 sm:mb-4 line-clamp-1 sm:line-clamp-2 leading-relaxed"
+                      className="text-sm text-base-content/70 mb-3 line-clamp-2 leading-relaxed min-h-[2.5rem]"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.1 + 0.4 }}
@@ -144,33 +144,33 @@ const AvailableStudySessions = () => {
 
                     {/* Session Details */}
                     <motion.div
-                      className="space-y-2 sm:space-y-3 text-sm"
+                      className="space-y-2 text-sm"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.1 + 0.5 }}
                     >
-                      <div className="flex items-center gap-2 sm:gap-3 text-base-content/80">
+                      <div className="flex items-center gap-2 text-base-content/80">
                         <FaCalendarAlt className="text-primary text-xs flex-shrink-0" />
-                        <span className="truncate">
+                        <span className="truncate text-xs">
                           {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
                           {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-2 sm:gap-3 text-base-content/80">
+                      <div className="flex items-center gap-2 text-base-content/80">
                         <FaClock className="text-primary text-xs flex-shrink-0" />
-                        <span>{session.sessionDuration} week program</span>
+                        <span className="text-xs">{session.sessionDuration} week program</span>
                       </div>
 
-                      <div className="flex items-center gap-2 sm:gap-3 text-base-content/80">
+                      <div className="flex items-center gap-2 text-base-content/80">
                         <FaUserGraduate className="text-primary text-xs flex-shrink-0" />
-                        <span>{session.enrolledStudents || 0} students enrolled</span>
+                        <span className="text-xs">{session.enrolledStudents || 0} students enrolled</span>
                       </div>
 
                       {session.tutorName && (
-                        <div className="flex items-center gap-2 sm:gap-3 text-base-content/80">
+                        <div className="flex items-center gap-2 text-base-content/80">
                           <FaChalkboardTeacher className="text-primary text-xs flex-shrink-0" />
-                          <span className="truncate">Taught by {session.tutorName}</span>
+                          <span className="truncate text-xs">By {session.tutorName}</span>
                         </div>
                       )}
                     </motion.div>
@@ -178,7 +178,7 @@ const AvailableStudySessions = () => {
 
                   {/* See More Button */}
                   <motion.div
-                    className="card-actions justify-end pt-4 sm:pt-6"
+                    className="card-actions justify-end pt-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 + 0.6 }}
@@ -189,8 +189,8 @@ const AvailableStudySessions = () => {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        <span>See More</span>
-                        <FaArrowRight className="ml-2 transition-transform group-hover/btn:translate-x-1" />
+                        <span className="text-xs">See More</span>
+                        <FaArrowRight className="ml-1 transition-transform group-hover/btn:translate-x-1 text-xs" />
                       </motion.button>
                     </Link>
                   </motion.div>
@@ -204,7 +204,7 @@ const AvailableStudySessions = () => {
       </motion.div>
 
       {/* Show More Sessions Link */}
-      {sessions.filter((s) => s.status === 'approved').length > 6 && (
+      {sessions.filter((s) => s.status === 'approved').length > 8 && (
         <motion.div
           className="text-center mt-10 sm:mt-12"
           initial={{ opacity: 0, y: 20 }}

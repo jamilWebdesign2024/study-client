@@ -3,10 +3,13 @@ import { Link, NavLink, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import {
   FaBars, FaTimes, FaUserCircle, FaGraduationCap,
-  FaChalkboardTeacher, FaHome
+  FaHome, FaCaretDown
 } from "react-icons/fa";
+import { LiaBlogger } from "react-icons/lia";
 import useAuth from "../../../hooks/useAuth";
 import ThemeToggle from "../../ThemeToggle";
+import { MdRoundaboutLeft } from "react-icons/md";
+import { MdDashboard } from "react-icons/md";
 
 const Navbar = () => {
   const { user, signOutUser } = useAuth();
@@ -21,15 +24,14 @@ const Navbar = () => {
       end={end}
       children={({ isActive }) => {
         const activeStyles = isActive
-          ? "text-primary font-semibold bg-primary/10"
-          : "hover:bg-base-200 text-base-content";
-        const underlineStyles = isActive ? "w-3/4" : "w-0 group-hover:w-3/4";
-
+          ? "text-primary bg-primary/10 font-semibold"
+          : "hover:text-primary hover:bg-base-200";
         return (
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all relative group ${activeStyles}`}>
-            <Icon className="text-lg" />
-            {label}
-            <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-primary rounded-full transition-all duration-300 ${underlineStyles}`}></span>
+          <div
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${activeStyles}`}
+          >
+            <Icon className="text-sm" />
+            <span>{label}</span>
           </div>
         );
       }}
@@ -37,7 +39,6 @@ const Navbar = () => {
     />
   );
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -51,234 +52,116 @@ const Navbar = () => {
   const handleLogout = async () => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to log out?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "bg-base-200 text-base-content",
-      cancelButtonColor: "bg-accent/10",
-      confirmButtonText: "Yes, log me out!",
-      cancelButtonText: "Cancel",
+      confirmButtonColor: "#3B82F6",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes",
     });
 
     if (result.isConfirmed) {
       await signOutUser();
       setShowDropdown(false);
       setIsMenuOpen(false);
-      Swal.fire({
-        icon: "success",
-        title: "Logged out successfully",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      Swal.fire({ icon: "success", title: "Logged Out", timer: 1200, showConfirmButton: false });
       navigate("/");
     }
   };
 
   const navItems = (
     <>
-      <li className="mx-1">
-        <NavItem to="/" icon={FaHome} label="Home" end />
-      </li>
-      <li className="mx-1">
-        <NavItem to="/tutors" icon={FaChalkboardTeacher} label="Tutors" />
-      </li>
-      <li className="mx-1">
-        <NavItem to="/all-study-sessions" icon={FaGraduationCap} label="Study Sessions" />
-      </li>
+      <li><NavItem to="/" icon={FaHome} label="Home" end /></li>
+      <li><NavItem to="/all-study-sessions" icon={FaGraduationCap} label="Sessions" /></li>
+      <li><NavItem to="/blog" icon={LiaBlogger} label="Blog" /></li>
+      <li><NavItem to="/about" icon={MdRoundaboutLeft} label="About" /></li>
+      {user && (
+        <li>
+          <NavLink
+            to="/dashboard"
+            className="flex gap-2 px-3 py-2 rounded-lg text-sm hover:bg-base-200 text-base-content" icon={MdDashboard}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Dashboard
+          </NavLink>
+        </li>
+      )}
     </>
   );
 
   return (
-    <nav className="bg-base-100 border-b border-base-300 sticky top-0 z-50 shadow-sm w-full">
-      {/* Container full width but with padding */}
-      <div className="w-full px-4 sm:px-6 lg:px-12">
-        <div className="flex justify-between items-center h-16">
-          
-          {/* Left - Logo */}
-          <Link
-            to="/"
-            className="text-2xl font-bold flex items-center"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            <span className="bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded-lg mr-2">Study</span>
-            <span className="text-base-content">Sphere</span>
-          </Link>
+    <nav className="bg-base-100/95 backdrop-blur-lg border-b border-base-300 sticky top-0 z-50 w-full">
+      <div className="w-full px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center h-14">
 
-          {/* Center Links */}
-          <div className="hidden md:flex flex-1 justify-center">
-            <ul className="flex gap-2">{navItems}</ul>
+          {/* Logo Section */} <Link to="/" className="flex items-center gap-2 group" onClick={() => setIsMenuOpen(false)} > <div className="bg-gradient-to-br from-primary to-primary/80 text-white p-2 rounded-xl shadow-lg group-hover:shadow-primary/25 transition-all duration-300"> <FaGraduationCap className="text-xl" /> </div> <div className="flex flex-col"> <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> StudySphere </span> <span className="text-xs text-base-content/60 -mt-1">Learn & Grow</span> </div> </Link>
+
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex flex-1 justify-center">
+            <ul className="flex gap-2 rounded-lg p-1 border border-base-300 bg-base-200/50">
+              {navItems}
+            </ul>
           </div>
 
-          {/* Right side */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Right Actions */}
+          <div className="flex items-center gap-3">
             <ThemeToggle />
 
             {!user ? (
               <div className="hidden md:flex items-center gap-3">
-                <NavLink
-                  to="/login"
-                  className="px-4 btn btn-outline rounded-xl py-2 text-base-content hover:bg-secondary/5 hover:text-primary transition-colors font-medium"
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/signup"
-                  className="px-4 py-2 btn btn-primary text-white rounded-lg font-medium shadow-md"
-                >
-                  Sign Up
-                </NavLink>
+                <NavLink to="/login" className="text-sm px-4 py-2 btn-ghost rounded-lg">Login</NavLink>
+                <NavLink to="/signup" className="text-sm px-4 py-2 btn btn-primary rounded-lg text-white">Sign Up</NavLink>
               </div>
             ) : (
-              <div className="hidden md:block relative" ref={dropdownRef}>
+              <div ref={dropdownRef} className="hidden md:block relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center gap-2 focus:outline-none group"
+                  className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-base-200 text-sm"
                 >
-                  <div className="relative">
-                    {user.photoURL ? (
-                      <img
-                        src={user.photoURL}
-                        alt="profile"
-                        className="w-9 h-9 rounded-full object-cover border-2 border-base-100 shadow-md group-hover:border-primary transition-all"
-                      />
-                    ) : (
-                      <div className="w-9 h-9 rounded-full bg-base-200 flex items-center justify-center border-2 border-base-100 shadow-md group-hover:border-primary transition-all">
-                        <FaUserCircle className="text-2xl text-base-content" />
-                      </div>
-                    )}
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success rounded-full border-2 border-base-100"></div>
-                  </div>
-                  <span className="text-base-content font-medium hidden lg:inline-block">
-                    {user.displayName?.split(' ')[0] || 'User'}
-                  </span>
+                  {user.photoURL ? (
+                    <img src={user.photoURL} className="w-8 h-8 rounded-lg object-cover" />
+                  ) : <FaUserCircle className="text-lg" />}
+                  <FaCaretDown className={`text-xs transition ${showDropdown ? "rotate-180" : ""}`} />
                 </button>
 
                 {/* Dropdown */}
                 {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-64 bg-base-100 rounded-xl shadow-xl ring-1 ring-base-300 z-50 overflow-hidden">
-                    <div className="p-4 bg-gradient-to-r from-primary to-secondary text-white">
-                      <div className="flex items-center gap-3">
-                        {user.photoURL ? (
-                          <img
-                            src={user.photoURL}
-                            className="w-12 h-12 rounded-full border-2 border-white"
-                            alt="user"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center border-2 border-white">
-                            <FaUserCircle className="text-3xl text-white" />
-                          </div>
-                        )}
-                        <div>
-                          <h3 className="font-semibold truncate">
-                            {user.displayName || "User"}
-                          </h3>
-                          <p className="text-xs text-white/90 truncate">
-                            {user.email}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-2">
-                      <NavLink
-                        to="/dashboard"
-                        className="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-base-200 text-base-content transition-all"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        Dashboard
-                      </NavLink>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-base-200 text-base-content transition-all"
-                      >
-                        Logout
-                      </button>
-                    </div>
+                  <div className="absolute right-0 mt-2 w-56 bg-base-100 rounded-lg shadow-lg border border-base-300 p-2 z-50">
+                    <NavLink to="/profile" className="block px-3 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setShowDropdown(false)}>
+                      Profile
+                    </NavLink>
+                    <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-error hover:bg-error/10 text-sm rounded-lg">
+                      Logout
+                    </button>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden ml-2">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-lg text-base-content hover:bg-base-200 transition-all"
-              >
-                {isMenuOpen ? <FaTimes className="h-5 w-5" /> : <FaBars className="h-5 w-5" />}
-              </button>
-            </div>
+            {/* Mobile Menu Icon */}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2 rounded-lg hover:bg-base-200">
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-base-100 border-t border-base-300 shadow-inner">
-          <div className="px-4 pt-2 pb-4 space-y-1">
-            <div className="flex justify-center mb-2">
-              <ul className="w-full">{navItems}</ul>
-            </div>
-
+        <div className="lg:hidden bg-base-100 border-t border-base-300">
+          <ul className="flex flex-col p-3 gap-1">{navItems}</ul>
+          <div className="px-3 pb-3 border-t border-base-300">
             {!user ? (
-              <div className="pt-2 border-t border-base-300">
-                <NavLink
-                  to="/login"
-                  className="block px-4 btn-outline py-3 rounded-lg text-base font-medium text-base-content hover:bg-base-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Login
-                </NavLink>
-                <NavLink
-                  to="/signup"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-white btn btn-primary mt-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Sign Up
-                </NavLink>
-              </div>
+              <>
+                <NavLink to="/login" className="block px-4 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setIsMenuOpen(false)}>Login</NavLink>
+                <NavLink to="/signup" className="block px-4 py-2 rounded-lg bg-primary text-white text-sm" onClick={() => setIsMenuOpen(false)}>Sign Up</NavLink>
+              </>
             ) : (
-              <div className="pt-2 border-t border-base-300">
-                <div className="flex items-center px-4 py-3 rounded-lg bg-base-200 mb-2">
-                  {user.photoURL ? (
-                    <div className="relative mr-3">
-                      <img
-                        src={user.photoURL}
-                        alt="profile"
-                        className="w-10 h-10 rounded-full object-cover border-2 border-base-100 shadow"
-                      />
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-success rounded-full border-2 border-base-100"></div>
-                    </div>
-                  ) : (
-                    <div className="relative mr-3">
-                      <div className="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center border-2 border-base-100 shadow">
-                        <FaUserCircle className="text-xl text-base-content" />
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-base-content">
-                      {user.displayName || 'User'}
-                    </p>
-                    <p className="text-xs text-base-content/70">
-                      {user.email}
-                    </p>
-                  </div>
-                </div>
-                <NavLink
-                  to="/dashboard"
-                  className="block px-4 py-3 rounded-lg text-base font-medium text-base-content hover:bg-base-200"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Dashboard
-                </NavLink>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-base-content hover:bg-base-200"
-                >
+              <>
+                <NavLink to="/profile" className="block px-4 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setIsMenuOpen(false)}>Profile</NavLink>
+                <button onClick={handleLogout} className="w-full px-4 py-2 rounded-lg hover:bg-error/10 text-error text-sm">
                   Logout
                 </button>
-              </div>
+              </>
             )}
           </div>
         </div>
