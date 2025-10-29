@@ -22,203 +22,124 @@ const AvailableStudySessions = () => {
     }
   });
 
-  const getSessionStatus = (start, end) => {
-    const now = dayjs();
-    if (now.isBefore(dayjs(start))) return 'upcoming';
-    if (now.isAfter(dayjs(end))) return 'closed';
-    return 'ongoing';
-  };
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.5, staggerChildren: 0.1 }
-    }
-  };
   const cardVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: { type: 'spring', duration: 0.6, bounce: 0.3 }
-    }
-  };
-  const titleVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', duration: 0.8, bounce: 0.4 }
+      transition: { type: 'spring', duration: 0.6 }
     }
   };
 
   return (
     <motion.div
-      className="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-base-300"
-      variants={containerVariants}
+      className="w-full py-10 px-4 sm:px-6 lg:px-12 bg-base-200/50"
       initial="hidden"
       animate="visible"
     >
-      {/* Section Title */}
-      <div className="text-center mb-10 sm:mb-12">
-        <motion.h2
-          className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4"
-          variants={titleVariants}
-        >
-          Explore Study Sessions
-        </motion.h2>
-        <motion.p
-          className="text-base sm:text-lg text-base-content/70 max-w-2xl sm:max-w-3xl mx-auto"
-          variants={titleVariants}
-          transition={{ delay: 0.2 }}
-        >
-          Join interactive learning experiences with expert tutors and peers.
-        </motion.p>
+
+      {/* Title */}
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8 text-center sm:text-left">
+        <div className="space-y-1">
+          <h2 className="jost text-3xl sm:text-4xl md:text-4xl font-bold text-primary">Featured Study Sessions</h2>
+          <p className="text-base opacity-70">
+            Explore the most popular learning sessions
+          </p>
+        </div>
+        <button className="btn btn-outline btn-sm w-fit mx-auto sm:mx-0 rounded-lg btn-primary hover:bg-primary hover:text-base-content">
+          View All
+        </button>
       </div>
 
-      {/* Cards Grid - 4 columns on large screens */}
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-        variants={containerVariants}
-      >
+
+      {/* Grid Cards */}
+      <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {sessions
-          .filter((session) => session.status === 'approved')
-          .slice(0, 8) // Show 8 cards for 2 rows of 4
-          .map((session, index) => {
-            const status = getSessionStatus(
-              session.registrationStartDate,
-              session.registrationEndDate
-            );
+          .filter((s) => s.status === 'approved')
+          .slice(0, 8)
+          .map((session) => (
+            <motion.div
+              key={session._id}
+              variants={cardVariants}
+              className="bg-secondary/5 shadow-md hover:shadow-xl border border-base-200 rounded-xl p-5 transition-all duration-300 group flex flex-col justify-between"
+              whileHover={{ scale: 1.02 }}
+            >
+              {/* Category */}
+              <div className="mb-3">
+                <span className="badge badge-secondary text-xs">
+                  {session.subject || "Education"}
+                </span>
+              </div>
 
-            return (
-              <motion.div
-                key={session._id}
-                className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-200 h-full flex flex-col relative overflow-hidden group"
-                variants={cardVariants}
-                whileHover={{
-                  scale: 1.02,
-                  transition: { type: 'spring', bounce: 0.4, duration: 0.3 }
-                }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {/* Status Badge */}
-                <div className="absolute top-3 right-3 z-10">
-                  <motion.div
-                    className={`badge text-xs font-semibold ${status === 'upcoming'
-                      ? 'badge-info'
-                      : status === 'ongoing'
-                        ? 'badge-success'
-                        : 'badge-error'
-                      }`}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: index * 0.1 + 0.5, type: 'spring' }}
-                  >
-                    {status}
-                  </motion.div>
+              {/* Title */}
+              <h3 className="font-bold text-base mb-3 line-clamp-2">
+                {session.sessionTitle}
+              </h3>
+
+              {/* Details */}
+              <div className="text-xs text-base-content/70 space-y-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <FaCalendarAlt className="text-primary text-xs" />
+                  <span>
+                    {dayjs(session.registrationStartDate).format("MMM D")} -{" "}
+                    {dayjs(session.registrationEndDate).format("MMM D")}
+                  </span>
                 </div>
 
-                {/* Card Body */}
-                <div className="card-body flex-1 flex flex-col justify-between p-4 sm:p-5">
-                  <div className="flex-1">
-                    <motion.h3
-                      className="card-title text-base font-bold text-base-content mb-2 line-clamp-2 min-h-[2.5rem]"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: index * 0.1 + 0.3 }}
-                    >
-                      {session.sessionTitle}
-                    </motion.h3>
-
-                    <motion.p
-                      className="text-sm text-base-content/70 mb-3 line-clamp-2 leading-relaxed min-h-[2.5rem]"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: index * 0.1 + 0.4 }}
-                    >
-                      {session.description}
-                    </motion.p>
-
-                    {/* Session Details */}
-                    <motion.div
-                      className="space-y-2 text-sm"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: index * 0.1 + 0.5 }}
-                    >
-                      <div className="flex items-center gap-2 text-base-content/80">
-                        <FaCalendarAlt className="text-primary text-xs flex-shrink-0" />
-                        <span className="truncate text-xs">
-                          {dayjs(session.registrationStartDate).format('MMM D')} -{' '}
-                          {dayjs(session.registrationEndDate).format('MMM D, YYYY')}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-base-content/80">
-                        <FaClock className="text-primary text-xs flex-shrink-0" />
-                        <span className="text-xs">{session.sessionDuration} week program</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-base-content/80">
-                        <FaUserGraduate className="text-primary text-xs flex-shrink-0" />
-                        <span className="text-xs">{session.enrolledStudents || 0} students enrolled</span>
-                      </div>
-
-                      {session.tutorName && (
-                        <div className="flex items-center gap-2 text-base-content/80">
-                          <FaChalkboardTeacher className="text-primary text-xs flex-shrink-0" />
-                          <span className="truncate text-xs">By {session.tutorName}</span>
-                        </div>
-                      )}
-                    </motion.div>
-                  </div>
-
-                  {/* See More Button */}
-                  <motion.div
-                    className="card-actions justify-end pt-4"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.1 + 0.6 }}
-                  >
-                    <Link to={`/view-details/${session._id}`} className="w-full">
-                      <motion.button
-                        className="btn btn-primary btn-sm w-full group/btn"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <span className="text-xs">See More</span>
-                        <FaArrowRight className="ml-1 transition-transform group-hover/btn:translate-x-1 text-xs" />
-                      </motion.button>
-                    </Link>
-                  </motion.div>
+                <div className="flex items-center gap-2">
+                  <FaClock className="text-primary text-xs" />
+                  <span>{session.sessionDuration} Weeks</span>
                 </div>
 
-                {/* Hover Effect Background */}
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-              </motion.div>
-            );
-          })}
+                <div className="flex items-center gap-2">
+                  <FaUserGraduate className="text-primary text-xs" />
+                  <span>{session.enrolledStudents || 0} Students</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <FaChalkboardTeacher className="text-primary text-xs" />
+                  <span>{session.tutorName}</span>
+                </div>
+              </div>
+
+              {/* Bottom section */}
+              <div className="flex items-center justify-between mt-auto">
+                <div className="text-xs">
+                  {
+                    session.isPaid ? (
+                      <>
+                        <span className="line-through opacity-50">${session.originalPrice}</span>
+                        <span className="font-bold text-error ml-1">${session.price}</span>
+                      </>
+                    ) : (
+                      <span className="font-bold text-success">Free</span>
+                    )
+                  }
+                </div>
+
+                <Link to={`/view-details/${session._id}`}>
+                  <button className="btn btn-link text-xs p-0 gap-1 text-primary no-underline">
+                    View More <FaArrowRight className="text-xs" />
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+          ))}
       </motion.div>
 
-      {/* Show More Sessions Link */}
-      {sessions.filter((s) => s.status === 'approved').length > 8 && (
-        <motion.div
-          className="text-center mt-10 sm:mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          <Link to="/all-sessions">
-            <button className="btn btn-outline btn-primary">
-              View All Sessions
-              <FaArrowRight className="ml-2" />
-            </button>
-          </Link>
-        </motion.div>
-      )}
+      {/* Show More */}
+      {
+        sessions.length > 8 && (
+          <div className="text-center mt-10">
+            <Link to="/all-sessions">
+              <button className="btn btn-outline btn-primary">
+                View All Sessions <FaArrowRight className="ml-2" />
+              </button>
+            </Link>
+          </div>
+        )
+      }
     </motion.div>
   );
 };

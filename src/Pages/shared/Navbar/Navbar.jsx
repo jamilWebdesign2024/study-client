@@ -54,8 +54,6 @@ const Navbar = () => {
       title: "Are you sure?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3B82F6",
-      cancelButtonColor: "#6B7280",
       confirmButtonText: "Yes",
     });
 
@@ -78,9 +76,10 @@ const Navbar = () => {
         <li>
           <NavLink
             to="/dashboard"
-            className="flex gap-2 px-3 py-2 rounded-lg text-sm hover:bg-base-200 text-base-content" icon={MdDashboard}
+            className="flex gap-2 px-3 py-2 rounded-lg text-sm hover:bg-base-200"
             onClick={() => setIsMenuOpen(false)}
           >
+            <MdDashboard />
             Dashboard
           </NavLink>
         </li>
@@ -93,7 +92,18 @@ const Navbar = () => {
       <div className="w-full px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
         <div className="flex justify-between items-center h-14">
 
-          {/* Logo Section */} <Link to="/" className="flex items-center gap-2 group" onClick={() => setIsMenuOpen(false)} > <div className="bg-gradient-to-br from-primary to-primary/80 text-white p-2 rounded-xl shadow-lg group-hover:shadow-primary/25 transition-all duration-300"> <FaGraduationCap className="text-xl" /> </div> <div className="flex flex-col"> <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"> StudySphere </span> <span className="text-xs text-base-content/60 -mt-1">Learn & Grow</span> </div> </Link>
+          {/* Logo Section */}
+          <Link to="/" className="flex items-center gap-2 group" onClick={() => setIsMenuOpen(false)}>
+            <div className="bg-primary p-2 rounded-xl shadow-lg group-hover:shadow-primary/25 transition-all duration-300 text-primary-content">
+              <FaGraduationCap className="text-xl" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-primary">
+                StudySphere
+              </span>
+              <span className="text-xs text-base-content/60 -mt-1">Learn & Grow</span>
+            </div>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex flex-1 justify-center">
@@ -108,8 +118,12 @@ const Navbar = () => {
 
             {!user ? (
               <div className="hidden md:flex items-center gap-3">
-                <NavLink to="/login" className="text-sm px-4 py-2 btn-ghost rounded-lg">Login</NavLink>
-                <NavLink to="/signup" className="text-sm px-4 py-2 btn btn-primary rounded-lg text-white">Sign Up</NavLink>
+                <NavLink to="/login" className="text-sm px-4 py-2 btn-ghost rounded-lg text-primary border border-primary hover:bg-primary hover:text-base-content">
+                  Login
+                </NavLink>
+                <NavLink to="/signup" className="text-sm px-4 py-2 btn rounded-lg btn-primary">
+                  Sign Up
+                </NavLink>
               </div>
             ) : (
               <div ref={dropdownRef} className="hidden md:block relative">
@@ -123,7 +137,6 @@ const Navbar = () => {
                   <FaCaretDown className={`text-xs transition ${showDropdown ? "rotate-180" : ""}`} />
                 </button>
 
-                {/* Dropdown */}
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-56 bg-base-100 rounded-lg shadow-lg border border-base-300 p-2 z-50">
                     <NavLink to="/profile" className="block px-3 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setShowDropdown(false)}>
@@ -153,7 +166,7 @@ const Navbar = () => {
             {!user ? (
               <>
                 <NavLink to="/login" className="block px-4 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setIsMenuOpen(false)}>Login</NavLink>
-                <NavLink to="/signup" className="block px-4 py-2 rounded-lg bg-primary text-white text-sm" onClick={() => setIsMenuOpen(false)}>Sign Up</NavLink>
+                <NavLink to="/signup" className="block px-4 py-2 rounded-lg btn-primary text-primary-content text-sm" onClick={() => setIsMenuOpen(false)}>Sign Up</NavLink>
               </>
             ) : (
               <>

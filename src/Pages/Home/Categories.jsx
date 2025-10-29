@@ -15,7 +15,7 @@ const Categories = () => {
     ];
 
     return (
-        <section className="py-10 px-4 sm:px-6 lg:px-12 bg-base-300/50">
+        <section className="py-10 px-4 sm:px-6 lg:px-12 bg-base-300">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8 text-center sm:text-left">
                 <div className="space-y-1">
@@ -47,10 +47,10 @@ const Categories = () => {
                         key={cat.id}
                         className="
               card 
-              bg-primary/10
+              bg-secondary/5
               border 
-              border-base-300 
-              shadow-sm 
+              border-primary 
+              shadow-lg
               hover:shadow-md 
               transition-all 
               duration-200 
