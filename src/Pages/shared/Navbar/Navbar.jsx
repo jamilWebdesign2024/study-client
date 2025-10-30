@@ -22,6 +22,7 @@ const Navbar = () => {
     <NavLink
       to={to}
       end={end}
+      className="flex items-center gap-2"
       children={({ isActive }) => {
         const activeStyles = isActive
           ? "text-primary bg-primary/10 font-semibold"
@@ -89,39 +90,35 @@ const Navbar = () => {
 
   return (
     <nav className="bg-base-100/95 backdrop-blur-lg border-b border-base-300 sticky top-0 z-50 w-full">
-      <div className="w-full px-3 sm:px-4 lg:px-6 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center h-14">
+      <div className="w-full px-4 sm:px-6 lg:px-12">
+        <div className="flex justify-between items-center h-16 w-full">
 
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-2 group" onClick={() => setIsMenuOpen(false)}>
-            <div className="bg-primary p-2 rounded-xl shadow-lg group-hover:shadow-primary/25 transition-all duration-300 text-primary-content">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+            <div className="bg-primary p-2 rounded-xl shadow-lg transition-all duration-300 text-primary-content">
               <FaGraduationCap className="text-xl" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-primary">
-                StudySphere
-              </span>
+              <span className="text-xl font-bold text-primary">StudySphere</span>
               <span className="text-xs text-base-content/60 -mt-1">Learn & Grow</span>
             </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <ul className="flex gap-2 rounded-lg p-1 border border-base-300 bg-base-200/50">
-              {navItems}
-            </ul>
-          </div>
+          {/* Desktop Navigation */}
+          <ul className="hidden lg:flex gap-1 border border-base-300 bg-base-200/50 rounded-xl px-3 py-1">
+            {navItems}
+          </ul>
 
-          {/* Right Actions */}
+          {/* Right Side */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
 
             {!user ? (
               <div className="hidden md:flex items-center gap-3">
-                <NavLink to="/login" className="text-sm px-4 py-2 btn-ghost rounded-lg text-primary border border-primary hover:bg-primary hover:text-base-content">
+                <NavLink to="/login" className="text-sm px-4 py-2 border border-primary text-primary hover:bg-primary hover:text-white rounded-lg">
                   Login
                 </NavLink>
-                <NavLink to="/signup" className="text-sm px-4 py-2 btn rounded-lg btn-primary">
+                <NavLink to="/signup" className="text-sm px-4 py-2 bg-primary text-white rounded-lg">
                   Sign Up
                 </NavLink>
               </div>
@@ -138,7 +135,7 @@ const Navbar = () => {
                 </button>
 
                 {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-56 bg-base-100 rounded-lg shadow-lg border border-base-300 p-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-base-100 rounded-lg shadow-lg border border-base-300 p-2 z-50">
                     <NavLink to="/profile" className="block px-3 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setShowDropdown(false)}>
                       Profile
                     </NavLink>
@@ -150,7 +147,7 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Mobile Menu Icon */}
+            {/* Mobile Menu Button */}
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2 rounded-lg hover:bg-base-200">
               {isMenuOpen ? <FaTimes /> : <FaBars />}
             </button>
@@ -166,7 +163,7 @@ const Navbar = () => {
             {!user ? (
               <>
                 <NavLink to="/login" className="block px-4 py-2 rounded-lg hover:bg-base-200 text-sm" onClick={() => setIsMenuOpen(false)}>Login</NavLink>
-                <NavLink to="/signup" className="block px-4 py-2 rounded-lg btn-primary text-primary-content text-sm" onClick={() => setIsMenuOpen(false)}>Sign Up</NavLink>
+                <NavLink to="/signup" className="block px-4 py-2 bg-primary text-white rounded-lg text-sm" onClick={() => setIsMenuOpen(false)}>Sign Up</NavLink>
               </>
             ) : (
               <>

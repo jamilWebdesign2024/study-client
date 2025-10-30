@@ -57,9 +57,9 @@ const Banner = () => {
                             <div className="absolute inset-0 bg-black/50 bg-opacity-60"></div>
 
                             {/* ✅ Clean Text Area */}
-                            <div className="absolute inset-0 flex flex-col justify-center items-start px-6 md:px-20 gap-5 z-10 max-w-lg">
+                            <div className="absolute inset-0 flex flex-col justify-center items-start px-6 md:px-20 gap-5 z-10 max-w-2xl">
 
-                                <h2 className="jost text-3xl sm:text-4xl md:text-4xl font-bold text-white drop-shadow-lg">
+                                <h2 className="jost lg:text-6xl sm:text-4xl md:text-4xl font-bold text-white drop-shadow-lg">
                                     {slide.heading}
                                 </h2>
 

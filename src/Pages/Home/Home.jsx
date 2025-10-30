@@ -7,10 +7,12 @@ import WhyChooseUs from './FAQ';
 import JoinCommunity from './FAQ';
 import WhyChooseUsSection from './WhyChooseUsSection';
 import FAQ from './FAQ';
-import UpcomingSessions from './UpcomingSessions';
+// import UpcomingSessions from './UpcomingSessions';
 import Testimonials from './Testiomonials';
 import Newsletter from './NewsLetter';
 import Categories from './Categories';
+import Learn from './Learn';
+import GrowUp from './GrowUp';
 
 const Home = () => {
     return (
@@ -18,8 +20,10 @@ const Home = () => {
             <Banner></Banner>
             <Categories />
             <AvailableStudySessions></AvailableStudySessions>
-            <UpcomingSessions></UpcomingSessions>
+            <Learn></Learn>
+            {/* <UpcomingSessions></UpcomingSessions> */}
             <Testimonials></Testimonials>
+            <GrowUp></GrowUp>
             <WhyChooseUsSection></WhyChooseUsSection>
             <FAQ></FAQ>
             <Newsletter></Newsletter>
